@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Isha Automation Practice – Labs Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="icon" href="images/isha-logo.jpeg">
+
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/layout.css">
+<link rel="stylesheet" href="styles/components.css">
+</head>
+
+<body>
+
+<!-- ================= GLOBAL HEADER INCLUDE ================= -->
+<div id="global-header"></div>
+
+<script>
+fetch("includes/header.html")
+  .then(r => r.text())
+  .then(html => document.getElementById("global-header").innerHTML = html);
+</script>
+
+<!-- ================= MAIN ================= -->
+<main class="dashboard">
+
+  <div class="page-title">Automation Practice Labs</div>
+  <div class="page-subtitle">
+    Real-world UI elements to practice Selenium & Playwright automation
+  </div>
+
+  <div class="card-grid">
+
+    <div class="lab-card" onclick="go('inputs')">
+      <div class="lab-icon">📝</div>
+      <div class="lab-title">Inputs</div>
+      <div class="lab-desc">Text fields, password, validation, forms</div>
+    </div>
+
+    <div class="lab-card" onclick="go('dropdowns')">
+      <div class="lab-icon">⬇️</div>
+      <div class="lab-title">Dropdowns</div>
+      <div class="lab-desc">Select, auto-suggest, dynamic lists</div>
+    </div>
+
+    <div class="lab-card" onclick="go('checkbox-radio')">
+      <div class="lab-icon">☑️</div>
+      <div class="lab-title">Checkbox & Radio</div>
+      <div class="lab-desc">Single, multi-select, states</div>
+    </div>
+
+    <div class="lab-card" onclick="go('alerts')">
+      <div class="lab-icon">🚨</div>
+      <div class="lab-title">Alerts</div>
+      <div class="lab-desc">JS alerts, confirms, prompts, modals</div>
+    </div>
+
+    <div class="lab-card" onclick="go('tables')">
+      <div class="lab-icon">📊</div>
+      <div class="lab-title">Web Tables</div>
+      <div class="lab-desc">Dynamic tables, rows, columns</div>
+    </div>
+
+    <div class="lab-card" onclick="go('shadow')">
+      <div class="lab-icon">🌑</div>
+      <div class="lab-title">Shadow DOM</div>
+      <div class="lab-desc">Open shadow, closed shadow, nested</div>
+    </div>
+
+    <div class="lab-card" onclick="go('mouse-hover')">
+      <div class="lab-icon">🖱️</div>
+      <div class="lab-title">Mouse Hover</div>
+      <div class="lab-desc">Hover menus, tooltips</div>
+    </div>
+
+    <div class="lab-card" onclick="go('right-click')">
+      <div class="lab-icon">🖱️</div>
+      <div class="lab-title">Right Click</div>
+      <div class="lab-desc">Context menu handling</div>
+    </div>
+
+    <div class="lab-card" onclick="go('double-click')">
+      <div class="lab-icon">🖱️</div>
+      <div class="lab-title">Double Click</div>
+      <div class="lab-desc">Double click actions</div>
+    </div>
+
+    <div class="lab-card" onclick="go('drag-drop')">
+      <div class="lab-icon">🧲</div>
+      <div class="lab-title">Drag & Drop</div>
+      <div class="lab-desc">HTML5 and JS drag drop</div>
+    </div>
+
+    <div class="lab-card" onclick="go('slider')">
+      <div class="lab-icon">🎚️</div>
+      <div class="lab-title">Slider</div>
+      <div class="lab-desc">Range inputs, draggable sliders</div>
+    </div>
+
+   <div class="lab-card" onclick="go('Multilanguage')">
+      <div class="lab-icon">🌍</div>
+      <div class="lab-title">Multilanguage</div>
+      <div class="lab-desc">Multilanguage Selections</div>
+    </div>
+
+
+    <div class="lab-card" onclick="go('uploads')">
+      <div class="lab-icon">📤</div>
+      <div class="lab-title">File Upload</div>
+      <div class="lab-desc">Input upload, FileChooser</div>
+    </div>
+
+    <div class="lab-card" onclick="go('downloads')">
+      <div class="lab-icon">📥</div>
+      <div class="lab-title">File Download</div>
+      <div class="lab-desc">Save, verify, rename files</div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  © Isha Automation Practice Platform
+</footer>
+
+<script>
+function go(lab) {
+  window.location.href = "labs/" + lab + ".html";
+}
+</script>
+<script src="includes/header.js"></script>
+</body>
+</html>

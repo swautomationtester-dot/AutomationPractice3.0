@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Isha Automation Practice – Slider</title>
+
+<link rel="icon" href="../images/isha-logo.jpeg">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<script src="../includes/header.js"></script>
+
+<!-- ================= BREADCRUMB ================= -->
+<div class="breadcrumb-bar">
+  <a href="../index.html" class="crumb home">🏠 Home</a>
+  <span class="sep">›</span>
+  <span class="crumb">Labs</span>
+  <span class="sep">›</span>
+  <span class="crumb current">Slider</span>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="container">
+<div class="grid">
+
+<!-- ================= SLIDER CARD ================= -->
+<section class="card" data-testid="card-slider">
+  <div class="card-header">
+    <h2 class="card-title">🎚️ Slider / Mouse Move</h2>
+    <span class="kbd">drag • mouse.move()</span>
+  </div>
+
+  <div class="card-body" style="max-width:480px">
+
+    <div class="field">
+      <label class="field-label">Move the slider</label>
+      <div class="control">
+        <input type="range" min="0" max="100" value="40" id="slider" data-testid="slider-input">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Current Value</label>
+      <div id="result" class="kbd" data-testid="slider-value">40</div>
+    </div>
+
+    <div class="result-box" id="finalStatus" style="margin-top:12px">
+      Drag the slider using Playwright / Selenium
+    </div>
+
+  </div>
+</section>
+
+</div>
+</div>
+
+<!-- ================= FOOTER ================= -->
+<div class="lab-nav-footer">
+  <a class="btn btn-secondary" href="../index.html">⬅ Back</a>
+  <a class="btn btn-primary" href="drag-drop.html">Next ➡ Drag & Drop</a>
+</div>
+
+<footer class="site-footer">© Isha Automation</footer>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+const slider = document.getElementById("slider");
+const result = document.getElementById("result");
+const finalStatus = document.getElementById("finalStatus");
+
+result.textContent = slider.value;
+
+slider.addEventListener("input", () => {
+  result.textContent = slider.value;
+  finalStatus.textContent = "Current slider value: " + slider.value;
+});
+</script>
+
+</body>
+</html>

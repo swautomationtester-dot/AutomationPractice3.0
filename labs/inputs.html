@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Isha Automation Practice – Inputs Lab</title>
+
+  <link rel="icon" href="../images/isha-logo.jpeg">
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+</head>
+
+<body>
+
+<!-- ================= HEADER (JS INCLUDE) ================= -->
+<script src="../includes/header.js"></script>
+
+<!-- ================= BREADCRUMB ================= -->
+<div class="breadcrumb-bar">
+  <a href="../index.html" class="crumb home">🏠 Home</a>
+  <span class="sep">›</span>
+  <span class="crumb current">Inputs</span>
+</div>
+<!-- ================= CONTENT ================= -->
+<div class="container">
+  <div class="grid">
+
+    <!-- ================= TEXT INPUTS ================= -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Text Inputs – Practice</h2>
+        <span class="kbd">Form • Inputs</span>
+      </div>
+      <div class="card-body">
+        <div class="field"><label class="field-label">First Name</label><div class="control"><input id="in-firstname"></div></div>
+        <div class="field"><label class="field-label">Last Name</label><div class="control"><input id="in-lastname"></div></div>
+        <div class="field"><label class="field-label">Email</label><div class="control"><input id="in-email"></div></div>
+        <div class="field"><label class="field-label">Password</label><div class="control"><input id="in-password" type="password"></div></div>
+      </div>
+    </section>
+
+    <!-- ================= READONLY & DISABLED ================= -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Readonly & Disabled</h2>
+        <span class="kbd">States</span>
+      </div>
+      <div class="card-body">
+        <div class="field"><label class="field-label">Readonly</label><div class="control"><input value="Readonly value" readonly></div></div>
+        <div class="field"><label class="field-label">Disabled</label><div class="control"><input value="Disabled value" disabled></div></div>
+      </div>
+    </section>
+
+    <!-- ================= ENTERPRISE VALIDATION ================= -->
+<section class="card">
+  <div class="card-header">
+    <h2 class="card-title">Enterprise Validation</h2>
+    <span class="kbd">Live • Async • Tooltips • Toast</span>
+  </div>
+
+  <div class="card-body">
+
+    <!-- Username -->
+    <div class="field">
+      <label class="field-label">Username (min 4 chars, must be unique)</label>
+      <div class="control">
+        <input id="v-username" placeholder="Enter username">
+      </div>
+      <span id="err-username" class="error hidden">Username must be at least 4 characters</span>
+    </div>
+
+    <!-- Email -->
+    <div class="field">
+      <label class="field-label">Email</label>
+      <div class="control">
+        <input id="v-email" placeholder="Enter email">
+      </div>
+      <span id="err-email" class="error hidden">Enter a valid email address</span>
+    </div>
+
+    <!-- Password -->
+<div class="field">
+  <label class="field-label">Password (min 6 chars, strength required)</label>
+  <div class="control">
+    <input id="v-password" type="password" placeholder="Enter password">
+  </div>
+
+  <!-- Strength meter -->
+  <div style="margin-top:8px;">
+    <div class="strength-bar">
+      <div id="strengthFill" class="strength-fill"></div>
+    </div>
+    <div id="strengthText" class="kbd">Strength: —</div>
+  </div>
+
+  <span id="err-password" class="error hidden">Password must be at least 6 characters</span>
+</div>
+
+    <div class="row-actions">
+     <button id="validateBtn" class="btn btn-primary" onclick="submitEnterpriseForm()">
+  Validate & Submit
+</button>
+    </div>
+
+    <div id="valResult" class="kbd" style="margin-top:10px"></div>
+
+  </div>
+</section>
+
+    <!-- ================= FORM SUBMISSION ================= -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Form Submission</h2>
+        <span class="kbd">Submit • Result</span>
+      </div>
+      <div class="card-body">
+        <form id="automationForm" onsubmit="submitForm(event)">
+          <div class="field">
+            <label class="field-label">Name</label>
+            <div class="control"><input id="formName" required></div>
+          </div>
+
+          <div class="field">
+            <label class="field-label">Email</label>
+            <div class="control"><input id="formEmail" type="email" required></div>
+          </div>
+
+          <div class="row-actions">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+
+        <p id="formResult" class="kbd" style="margin-top:10px"></p>
+      </div>
+    </section>
+
+    <!-- ================= DYNAMIC INPUTS ================= -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Dynamic Inputs</h2>
+        <span class="kbd">Add / Remove</span>
+      </div>
+      <div class="card-body">
+        <div id="dynArea"></div>
+
+<div class="row-actions">
+  <button class="btn btn-primary" onclick="addInput()">➕ Add Field</button>
+  <button class="btn btn-secondary" onclick="clearAll()">🗑️ Clear All</button>
+</div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ================= FOOTER NAV ================= -->
+<div class="lab-nav-footer">
+  <a class="btn btn-secondary" href="../index.html">⬅ Back to Dashboard</a>
+  <a class="btn btn-primary" href="dropdowns.html">Next ➡ Dropdowns</a>
+</div>
+
+<footer class="site-footer">© Isha Automation</footer>
+
+<!-- ================= SCRIPTS ================= -->
+<script>
+/* ================= ENTERPRISE VALIDATION ================= */
+
+const u = document.getElementById("v-username");
+const e = document.getElementById("v-email");
+const p = document.getElementById("v-password");
+const btn = document.getElementById("validateBtn");
+
+const eu = document.getElementById("err-username");
+const ee = document.getElementById("err-email");
+const ep = document.getElementById("err-password");
+
+let usernameOk = false;
+let emailOk = false;
+let passwordOk = false;
+
+/* Live validation */
+u.addEventListener("input", () => validateUsername());
+e.addEventListener("input", () => validateEmail());
+p.addEventListener("input", () => validatePassword());
+
+function setState(input, ok, errEl, msg) {
+  const control = input.parentElement;
+  control.classList.remove("valid", "invalid");
+
+  if (ok) {
+    control.classList.add("valid");
+    errEl.classList.add("hidden");
+  } else {
+    control.classList.add("invalid");
+    errEl.textContent = msg;
+    errEl.classList.remove("hidden");
+  }
+
+  updateButton();
+}
+
+function validateUsername() {
+  const val = u.value.trim();
+
+  if (val.length < 4) {
+    usernameOk = false;
+    setState(u, false, eu, "Username must be at least 4 characters");
+    return;
+  }
+
+  eu.textContent = "Checking availability...";
+  eu.classList.remove("hidden");
+
+  fakeServerCheck(val).then(isAvailable => {
+    if (!isAvailable) {
+      usernameOk = false;
+      setState(u, false, eu, "Username already taken");
+    } else {
+      usernameOk = true;
+      setState(u, true, eu, "");
+    }
+  });
+}
+
+function validateEmail() {
+  const val = e.value.trim().toLowerCase();
+
+  const blockedDomains = [
+    "mailinator.com",
+    "tempmail.com",
+    "10minutemail.com",
+    "fake.com",
+    "test.com"
+  ];
+
+  // Empty
+  if (val.length === 0) {
+    emailOk = false;
+    setState(e, false, ee, "Email is required");
+    return;
+  }
+
+  // Must contain @
+  if (!val.includes("@")) {
+    emailOk = false;
+    setState(e, false, ee, "Email must contain '@' symbol");
+    return;
+  }
+
+  const parts = val.split("@");
+
+  // Must have username part
+  if (parts[0].length === 0) {
+    emailOk = false;
+    setState(e, false, ee, "Email must start with a name before '@'");
+    return;
+  }
+
+  // Must have domain part
+  if (parts.length < 2 || parts[1].length === 0) {
+    emailOk = false;
+    setState(e, false, ee, "Email must contain a domain name");
+    return;
+  }
+
+  // Domain must contain dot
+  if (!parts[1].includes(".")) {
+    emailOk = false;
+    setState(e, false, ee, "Domain must contain a '.' (example: gmail.com)");
+    return;
+  }
+
+  // Must not start or end with dot
+  if (parts[1].startsWith(".") || parts[1].endsWith(".")) {
+    emailOk = false;
+    setState(e, false, ee, "Invalid domain format");
+    return;
+  }
+
+  // Final regex check
+  const strictRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (!strictRegex.test(val)) {
+    emailOk = false;
+    setState(e, false, ee, "Email format is invalid");
+    return;
+  }
+
+  // Blocked domains
+  const domain = parts[1];
+  if (blockedDomains.includes(domain)) {
+    emailOk = false;
+    setState(e, false, ee, "Temporary / fake email domains are not allowed");
+    return;
+  }
+
+  // Success
+  emailOk = true;
+  setState(e, true, ee, "");
+}
+
+
+function validatePassword() {
+  const val = p.value;
+
+  let strength = 0;
+
+  if (val.length >= 6) strength++;
+  if (/[A-Z]/.test(val)) strength++;
+  if (/[0-9]/.test(val)) strength++;
+  if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+  const fill = document.getElementById("strengthFill");
+  const text = document.getElementById("strengthText");
+
+  fill.className = "strength-fill";
+
+  if (val.length === 0) {
+    fill.style.width = "0%";
+    text.textContent = "Strength: —";
+    passwordOk = false;
+    setState(p, false, ep, "Password is required");
+    return;
+  }
+
+  if (val.length < 6) {
+    fill.style.width = "25%";
+    fill.classList.add("strength-weak");
+    text.textContent = "Strength: Weak";
+    passwordOk = false;
+    setState(p, false, ep, "Password must be at least 6 characters");
+    return;
+  }
+
+  if (strength <= 2) {
+    fill.style.width = "40%";
+    fill.classList.add("strength-weak");
+    text.textContent = "Strength: Weak";
+    passwordOk = false;
+    setState(p, false, ep, "Password is too weak");
+    return;
+  }
+
+  if (strength === 3) {
+    fill.style.width = "70%";
+    fill.classList.add("strength-medium");
+    text.textContent = "Strength: Medium";
+    passwordOk = true;
+    setState(p, true, ep, "");
+    return;
+  }
+
+  if (strength >= 4) {
+    fill.style.width = "100%";
+    fill.classList.add("strength-strong");
+    text.textContent = "Strength: Strong";
+    passwordOk = true;
+    setState(p, true, ep, "");
+  }
+}
+
+function updateButton() {
+  btn.disabled = !(usernameOk && emailOk && passwordOk);
+}
+
+/* Fake server API */
+function fakeServerCheck(username) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const blocked = ["admin", "test", "user", "isha"];
+      resolve(!blocked.includes(username.toLowerCase()));
+    }, 900);
+  });
+}
+
+/* Toast system */
+function showToast(msg, type="info") {
+  let container = document.querySelector(".toast-top");
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "toast-top";
+    document.body.appendChild(container);
+  }
+
+  const t = document.createElement("div");
+  t.className = "toast " + type + " slide";
+  t.textContent = msg;
+
+  container.appendChild(t);
+
+  setTimeout(() => {
+    t.classList.add("fade");
+    setTimeout(() => t.remove(), 300);
+  }, 2500);
+}
+
+/* Submit */
+function submitEnterpriseForm() {
+
+  // Force validate all fields
+  validateUsername();
+  validateEmail();
+  validatePassword();
+
+  // If still not valid → show error toast
+  if (!(usernameOk && emailOk && passwordOk)) {
+    showToast("❌ Please fix validation errors", "error");
+    return;
+  }
+
+  // Success
+  showToast("✅ Form submitted successfully!", "success");
+  document.getElementById("valResult").textContent =
+    "🎉 All validations passed. Ready for automation!";
+}
+
+/* ================= DYNAMIC INPUTS ================= */
+
+function addInput(){
+  const d = document.createElement("div");
+  d.className = "field";
+
+  d.innerHTML = `
+    <div class="control">
+      <input placeholder="Dynamic field">
+      <button type="button"
+              class="btn btn-secondary"
+              title="Remove"
+              onclick="this.closest('.field').remove()">
+        ❌
+      </button>
+    </div>
+  `;
+
+  document.getElementById("dynArea").appendChild(d);
+}
+
+function clearAll(){
+  document.getElementById("dynArea").innerHTML = "";
+}
+
+/* ================= FORM SUBMIT DEMO ================= */
+
+function submitForm(e){
+  e.preventDefault();
+  const name = document.getElementById("formName").value;
+  const email = document.getElementById("formEmail").value;
+  document.getElementById("formResult").textContent =
+    "✅ Submitted: " + name + " (" + email + ")";
+}
+</script>
+</body>
+</html>

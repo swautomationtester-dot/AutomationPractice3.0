@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Isha Automation Practice – Dropdowns</title>
+
+<link rel="icon" href="../images/isha-logo.jpeg">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+
+<style>
+/* ================= DROPDOWN PANELS ================= */
+
+.searchable-list,
+#multiOptions,
+#suggestions{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  margin-top: 6px;
+
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(0,0,0,.25);
+
+  z-index: 3000;
+  display: none;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+/* items */
+.searchable-list > div,
+#suggestions > div,
+#multiOptions > div{
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px dashed var(--border);
+}
+
+.searchable-list > div:hover,
+#suggestions > div:hover,
+#multiOptions > div:hover{
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+}
+
+.searchable-list > div:last-child,
+#suggestions > div:last-child,
+#multiOptions > div:last-child{
+  border-bottom: none;
+}
+
+/* Tags */
+.tag{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background: color-mix(in oklab, var(--primary) 20%, transparent);
+  border:1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 10px;
+  margin-right: 6px;
+  margin-bottom: 4px;
+  font-size: .85rem;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<script src="../includes/header.js"></script>
+
+<!-- ================= BREADCRUMB ================= -->
+<div class="breadcrumb-bar">
+  <a href="../index.html" class="crumb home">🏠 Home</a>
+  <span class="sep">›</span>
+  <span class="crumb">Labs</span>
+  <span class="sep">›</span>
+  <span class="crumb current">Dropdowns</span>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="container">
+<div class="grid">
+
+<!-- ================= NATIVE SELECT ================= -->
+<section class="card">
+  <div class="card-header">
+    <h2 class="card-title">Select Dropdown</h2>
+    <span class="kbd">Native &lt;select&gt;</span>
+  </div>
+  <div class="card-body" style="max-width:360px">
+    <div class="field">
+      <label class="field-label">Select an option</label>
+      <div class="control">
+        <select id="simpleSelect">
+          <option value="">Select</option>
+          <optgroup label="Basic Values">
+            <option>One</option>
+            <option>Two</option>
+            <option>Three</option>
+          </optgroup>
+          <optgroup label="Courses">
+            <option>Selenium</option>
+            <option>Playwright</option>
+            <option>Cypress</option>
+          </optgroup>
+        </select>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SEARCHABLE ================= -->
+<section class="card">
+  <div class="card-header">
+    <h2 class="card-title">Searchable Dropdown</h2>
+    <span class="kbd">Combobox</span>
+  </div>
+  <div class="card-body" style="max-width:420px">
+
+    <div class="field" style="position:relative">
+      <label class="field-label">Select a course</label>
+
+      <div class="control" id="searchableSelect">
+        <input id="searchableSelectInput" placeholder="Type to search...">
+        <button type="button" class="btn btn-secondary" id="searchToggle">▾</button>
+      </div>
+
+      <div id="searchableSelectList" class="searchable-list"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MULTI SELECT ================= -->
+<section class="card">
+  <div class="card-header">
+    <h2 class="card-title">Multi Select</h2>
+    <span class="kbd">Tags</span>
+  </div>
+
+  <div class="card-body">
+    <div class="field" style="position:relative">
+
+      <!-- Input -->
+      <div class="control multi-input" id="multiDisplay">
+        <div id="multiTags" class="multi-tags">
+          <span class="multi-placeholder">Click to select skills</span>
+        </div>
+      </div>
+
+      <!-- Panel -->
+      <div id="multiPanel" class="multi-panel">
+        <div class="multi-panel-header">
+          <strong>Select Skills</strong>
+          <span class="multi-close" id="closeMulti">✖</span>
+        </div>
+        <div class="multi-panel-body">
+          <div data-skill="Java">Java</div>
+          <div data-skill="Playwright">Playwright</div>
+          <div data-skill="Selenium">Selenium</div>
+          <div data-skill="Cypress">Cypress</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ================= AUTO SUGGEST ================= -->
+<section class="card">
+  <div class="card-header">
+    <h2 class="card-title">Auto Suggest</h2>
+    <span class="kbd">Filter</span>
+  </div>
+  <div class="card-body" style="max-width:420px">
+
+    <div class="field" style="position:relative">
+      <label class="field-label">Country</label>
+      <div class="control">
+        <input id="country" placeholder="Type country...">
+      </div>
+
+      <div id="suggestions"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= SHOW / HIDE ================= -->
+<section class="card">
+  <div class="card-header">
+    <h2 class="card-title">Show / Hide</h2>
+    <span class="kbd">Toggle</span>
+  </div>
+  <div class="card-body">
+
+    <div class="field" id="textField">
+      <label class="field-label">Textbox</label>
+      <div class="control">
+        <input id="displayedText">
+      </div>
+    </div>
+
+    <div class="row-actions">
+      <button class="btn btn-secondary" id="toggleBtn">Toggle</button>
+    </div>
+
+  </div>
+</section>
+
+</div>
+</div>
+
+<!-- ================= FOOTER NAV ================= -->
+<div class="lab-nav-footer">
+  <a class="btn btn-secondary" href="../index.html">⬅ Back to Home</a>
+  <a class="btn btn-primary" href="checkbox-radio.html">Next ➡ Checkbox & Radio</a>
+</div>
+
+<footer class="site-footer">© Isha Automation</footer>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+/* ================= SEARCHABLE DROPDOWN ================= */
+const courses = [
+  "Selenium – Basic",
+  "Selenium – Advanced",
+  "Playwright – Basic",
+  "Playwright – Advanced",
+  "Cypress",
+  "API Testing",
+  "BDD (Cucumber)"
+];
+
+const searchInput = document.getElementById("searchableSelectInput");
+const searchList  = document.getElementById("searchableSelectList");
+const toggleBtn   = document.getElementById("searchToggle");
+
+function renderSearchList(filter = "") {
+  searchList.innerHTML = "";
+  const filtered = courses.filter(c => c.toLowerCase().includes(filter.toLowerCase()));
+
+  if (filtered.length === 0) {
+    searchList.innerHTML = `<div>No results</div>`;
+  } else {
+    filtered.forEach(c => {
+      const div = document.createElement("div");
+      div.textContent = c;
+      div.onclick = () => {
+        searchInput.value = c;
+        searchList.style.display = "none";
+      };
+      searchList.appendChild(div);
+    });
+  }
+
+  searchList.style.display = "block";
+}
+
+searchInput.onfocus = () => renderSearchList();
+searchInput.oninput = () => renderSearchList(searchInput.value);
+toggleBtn.onclick = () => renderSearchList(searchInput.value);
+
+/* ================= MULTI SELECT ================= */
+
+const multiDisplay = document.getElementById("multiDisplay");
+const multiPanel   = document.getElementById("multiPanel");
+const multiTags    = document.getElementById("multiTags");
+const closeMulti   = document.getElementById("closeMulti");
+
+/* Open panel */
+multiDisplay.addEventListener("click", (e) => {
+  e.stopPropagation();
+  multiPanel.classList.toggle("show");
+});
+
+/* Close button */
+closeMulti.addEventListener("click", (e) => {
+  e.stopPropagation();
+  multiPanel.classList.remove("show");
+});
+
+/* Click outside closes */
+document.addEventListener("click", () => {
+  multiPanel.classList.remove("show");
+});
+
+/* Prevent panel click from closing */
+multiPanel.addEventListener("click", e => e.stopPropagation());
+
+/* Add tags */
+multiPanel.querySelectorAll("[data-skill]").forEach(opt => {
+  opt.addEventListener("click", () => {
+    const skill = opt.dataset.skill;
+
+    // prevent duplicates
+    if ([...multiTags.children].some(t => t.dataset.skill === skill)) return;
+
+    // remove placeholder
+    const ph = multiTags.querySelector(".multi-placeholder");
+    if (ph) ph.remove();
+
+    const tag = document.createElement("span");
+    tag.className = "multi-tag";
+    tag.dataset.skill = skill;
+    tag.innerHTML = `${skill} <button type="button">×</button>`;
+
+    tag.querySelector("button").onclick = (e) => {
+      e.stopPropagation();
+      tag.remove();
+
+      if (multiTags.children.length === 0) {
+        multiTags.innerHTML = `<span class="multi-placeholder">Click to select skills</span>`;
+      }
+    };
+
+    multiTags.appendChild(tag);
+  });
+});
+
+
+/* ================= AUTO SUGGEST ================= */
+const countries = ["India","USA","UK","Germany","France","Japan","China","Canada","Australia","Singapore"];
+const countryInput = document.getElementById("country");
+const suggestions  = document.getElementById("suggestions");
+
+countryInput.oninput = () => {
+  const val = countryInput.value.toLowerCase();
+  suggestions.innerHTML = "";
+
+  if (!val) {
+    suggestions.style.display = "none";
+    return;
+  }
+
+  const filtered = countries.filter(c => c.toLowerCase().includes(val));
+
+  filtered.forEach(c => {
+    const div = document.createElement("div");
+    div.textContent = c;
+    div.onclick = () => {
+      countryInput.value = c;
+      suggestions.style.display = "none";
+    };
+    suggestions.appendChild(div);
+  });
+
+  suggestions.style.display = filtered.length ? "block" : "none";
+};
+
+/* ---------- SHOW / HIDE ---------- */
+document.getElementById("toggleBtn").onclick = () => {
+  document.getElementById("textField").classList.toggle("hidden");
+};
+
+/* ---------- CLOSE PANELS ON OUTSIDE CLICK ---------- */
+document.addEventListener("click", e => {
+  if (!document.getElementById("searchableSelect").contains(e.target)) searchList.style.display = "none";
+  if (!multiDisplay.contains(e.target)) multiOptions.style.display = "none";
+});
+</script>
+
+</body>
+</html>

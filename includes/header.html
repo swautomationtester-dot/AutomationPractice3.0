@@ -1,0 +1,42 @@
+<!-- ================= GLOBAL HEADER ================= -->
+<header class="app-header">
+  <div class="header-inner">
+
+    <div class="brand-pill">
+      <img src="images/isha-logo.jpeg" class="logo-min">
+      <div class="title-block">
+        <div class="brand-title">Isha Automation Practice</div>
+        <div class="brand-sub">Playwright • Selenium</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn">🏠HOME</button>
+    </div>
+
+  </div>
+</header>
+
+<script>
+(function(){
+  // Detect if we are inside /labs/ folder
+  const inLabs = window.location.pathname.includes("/labs/");
+
+  // Set correct paths
+  const logo = document.getElementById("headerLogo");
+  const btn  = document.getElementById("allLabsBtn");
+
+  if(inLabs){
+    logo.src = "../images/isha-logo.jpeg";
+    btn.href = "../index.html";
+  } else {
+    logo.src = "images/isha-logo.jpeg";
+    btn.href = "index.html";
+  }
+
+  // Click on pill goes home
+  window.goHome = function(){
+    window.location.href = btn.href;
+  }
+})();
+</script>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Isha Automation Practice – CRUD Web Table</title>
+
+<link rel="icon" href="../images/isha-logo.jpeg">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<script src="../includes/header.js"></script>
+
+<!-- ================= BREADCRUMB ================= -->
+<div class="breadcrumb-bar">
+  <a href="../index.html" class="crumb home">🏠 Home</a>
+  <span class="sep">›</span>
+  <span class="crumb">Labs</span>
+  <span class="sep">›</span>
+  <span class="crumb current">CRUD Web Table</span>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="container">
+<div class="grid">
+
+<section class="card">
+
+  <div class="card-header">
+    <h2 class="card-title">🧠 Course Management – CRUD System</h2>
+    <span class="kbd">Create • Read • Update • Delete</span>
+  </div>
+
+  <div class="card-body">
+
+    <!-- ================= CREATE ================= -->
+    <div class="field" style="max-width:650px">
+      <label class="field-label">Add / Update Course</label>
+      <div class="control">
+        <input id="courseName" placeholder="Course name" />
+        <input id="coursePrice" type="number" placeholder="Price" />
+        <button class="btn btn-primary" id="saveBtn">💾 Save</button>
+        <button class="btn" id="cancelEditBtn" style="display:none">✖ Cancel</button>
+      </div>
+    </div>
+
+    <!-- ================= SEARCH ================= -->
+    <div class="field" style="max-width:320px">
+      <label class="field-label">Search Course</label>
+      <div class="control">
+        <input id="searchInput" placeholder="Type to filter..." />
+      </div>
+    </div>
+
+    <!-- ================= TABLE ================= -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Course</th>
+            <th>Price</th>
+            <th style="width:180px">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- ================= FOOTER BAR ================= -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+
+      <div class="kbd">
+        💰 Total Price: ₹ <span id="totalPrice">0</span>
+      </div>
+
+      <div class="row-actions">
+        <button class="btn" id="prevPage">⬅ Prev</button>
+        <span class="kbd" id="pageInfo">Page 1</span>
+        <button class="btn" id="nextPage">Next ➡</button>
+      </div>
+
+    </div>
+
+    <div class="kbd" style="margin-top:14px">
+      💡 Practice:
+      <ul>
+        <li>Create new records</li>
+        <li>Edit existing rows</li>
+        <li>Delete records</li>
+        <li>Search & paginate</li>
+        <li>Validate totals</li>
+        <li>Simulate full CRUD admin flow</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+</div>
+</div>
+
+<!-- ================= FOOTER ================= -->
+<div class="lab-nav-footer">
+  <a class="btn btn-secondary" href="../index.html">⬅ Back</a>
+  <a class="btn btn-primary" href="alerts.html">Next ➡ Alerts</a>
+</div>
+
+<footer class="site-footer">© Isha Automation</footer>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+/* ================= "DATABASE" ================= */
+let db = [
+  { id: 1, course: "Playwright", price: 400 },
+  { id: 2, course: "Selenium", price: 300 },
+  { id: 3, course: "Cypress", price: 350 },
+  { id: 4, course: "API Testing", price: 250 },
+  { id: 5, course: "Java", price: 500 },
+  { id: 6, course: "Python", price: 450 },
+  { id: 7, course: "Postman", price: 200 }
+];
+
+let editingId = null;
+
+/* ================= PAGINATION ================= */
+const pageSize = 4;
+let currentPage = 1;
+
+/* ================= RENDER ================= */
+function render(){
+  const tbody = document.getElementById("tableBody");
+  const search = document.getElementById("searchInput").value.toLowerCase();
+
+  const filtered = db.filter(d => d.course.toLowerCase().includes(search));
+
+  const start = (currentPage - 1) * pageSize;
+  const pageData = filtered.slice(start, start + pageSize);
+
+  tbody.innerHTML = "";
+
+  pageData.forEach(row => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${row.course}</td>
+      <td>${row.price}</td>
+      <td>
+        <button class="btn" onclick="editRow(${row.id})">✏ Edit</button>
+        <button class="btn btn-secondary" onclick="deleteRow(${row.id})">🗑 Delete</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Pagination info
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  document.getElementById("pageInfo").textContent = `Page ${currentPage} / ${totalPages}`;
+
+  // Total price
+  const total = filtered.reduce((sum, r) => sum + r.price, 0);
+  document.getElementById("totalPrice").textContent = total;
+}
+
+/* ================= CREATE / UPDATE ================= */
+document.getElementById("saveBtn").onclick = () => {
+  const name = document.getElementById("courseName").value.trim();
+  const price = Number(document.getElementById("coursePrice").value);
+
+  if(!name || !price){
+    alert("Enter course name and price");
+    return;
+  }
+
+  if(editingId){
+    // UPDATE
+    const row = db.find(d => d.id === editingId);
+    row.course = name;
+    row.price = price;
+  } else {
+    // CREATE
+    db.push({
+      id: Date.now(),
+      course: name,
+      price: price
+    });
+  }
+
+  resetForm();
+  render();
+};
+
+/* ================= EDIT ================= */
+function editRow(id){
+  const row = db.find(d => d.id === id);
+  document.getElementById("courseName").value = row.course;
+  document.getElementById("coursePrice").value = row.price;
+
+  editingId = id;
+  document.getElementById("saveBtn").textContent = "💾 Update";
+  document.getElementById("cancelEditBtn").style.display = "inline-block";
+}
+
+/* ================= CANCEL EDIT ================= */
+document.getElementById("cancelEditBtn").onclick = resetForm;
+
+function resetForm(){
+  editingId = null;
+  document.getElementById("courseName").value = "";
+  document.getElementById("coursePrice").value = "";
+  document.getElementById("saveBtn").textContent = "💾 Save";
+  document.getElementById("cancelEditBtn").style.display = "none";
+}
+
+/* ================= DELETE ================= */
+function deleteRow(id){
+  if(!confirm("Delete this course?")) return;
+  db = db.filter(d => d.id !== id);
+  render();
+}
+
+/* ================= SEARCH ================= */
+document.getElementById("searchInput").oninput = () => {
+  currentPage = 1;
+  render();
+};
+
+/* ================= PAGINATION ================= */
+document.getElementById("prevPage").onclick = () => {
+  if(currentPage > 1){
+    currentPage--;
+    render();
+  }
+};
+
+document.getElementById("nextPage").onclick = () => {
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  const filtered = db.filter(d => d.course.toLowerCase().includes(search));
+  const totalPages = Math.ceil(filtered.length / pageSize);
+
+  if(currentPage < totalPages){
+    currentPage++;
+    render();
+  }
+};
+
+/* ================= INIT ================= */
+render();
+</script>
+
+</body>
+</html>

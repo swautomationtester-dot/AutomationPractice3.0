@@ -1,0 +1,864 @@
+/*
+ * Modern Design System
+ * --------------------
+ * - Auto dark mode via prefers-color-scheme
+ * - Soft glassmorphism cards
+ * - Fluid spacing scale
+ */
+
+:root {
+  /* Base palette (dark default) */
+  --bg: #0e141b;
+  --surface: #0f172a;
+  --card: rgba(255,255,255,0.08);
+  --text: #e6edf3;
+  --muted: #94a3b8;
+  --border: rgba(255,255,255,0.14);
+
+  /* Accents */
+  --primary: #60a5fa;
+  --primary-2: #a78bfa;
+  --success: #22c55e;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+
+  /* Shadows / blur */
+  --shadow-1: 0 10px 30px rgba(0,0,0,.35);
+  --shadow-2: inset 0 1px 0 rgba(255,255,255,.12), 0 12px 25px rgba(0,0,0,.25);
+
+  /* Radius & spacing */
+  --r-sm: 10px; --r-md: 14px; --r-lg: 20px;
+  --sp-1: 6px; --sp-2: 10px; --sp-3: 14px; --sp-4: 18px; --sp-5: 22px;
+
+  /* Transitions */
+  --t-fast: .12s ease;
+  --t-med: .2s ease;
+  --t-slow: .35s ease;
+
+  /* Typography */
+  --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Noto Sans", Arial;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+@media (prefers-color-scheme: light){
+  :root {
+    --bg: #eef2f7;
+    --surface: #f5f7fb;
+    --card: rgba(255,255,255,0.8);
+    --text: #0f172a;
+    --muted: #475569;
+    --border: rgba(15,23,42,0.12);
+
+    --shadow-1: 0 10px 24px rgba(60,80,100,.18);
+    --shadow-2: inset 0 1px 0 rgba(255,255,255,.8), 0 12px 25px rgba(60,80,100,.16);
+  }
+}
+
+/* Root & base */
+* { box-sizing: border-box }
+html, body { height: 100% }
+body {
+  margin: 0; font-family: var(--font);
+  background:
+    radial-gradient(900px 600px at -5% 0%, #0ea5e9 0%, transparent 60%),
+    radial-gradient(900px 600px at 105% 20%, #a78bfa 0%, transparent 60%),
+    linear-gradient(180deg, var(--bg), var(--surface));
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background var(--t-slow), color var(--t-med);
+}
+
+/* Header */
+.app-header{
+  position: sticky; top: 0; z-index: 50;
+  display:flex; align-items:center; justify-content:space-between;
+  padding: var(--sp-3) var(--sp-4);
+  backdrop-filter: blur(12px);
+  background: color-mix(in oklab, var(--surface) 60%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+.header-left{display:flex; gap: var(--sp-3); align-items:center}
+.brand{
+  display:flex; align-items:center; gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--r-sm);
+  background: color-mix(in oklab, var(--card) 45%, transparent);
+  box-shadow: var(--shadow-2);
+}
+.logo-min{
+  width: 40px; height: 40px; border-radius: 12px;
+  background: linear-gradient(135deg,#60a5fa, #a78bfa);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.4), 0 6px 12px rgba(0,0,0,.25);
+}
+.title-block h1{
+  margin:0; font-size: 1.15rem; letter-spacing:.2px;
+}
+.title-sub{
+  display:inline-flex; gap:8px; align-items:center;
+  font-size:.9rem; color: var(--muted);
+}
+.title-sub .dot{width: 4px; height: 4px; border-radius: 50%; background: var(--muted)}
+
+/* Toggle */
+.dark-toggle{display:flex; gap: var(--sp-2); align-items:center}
+.switch{position:relative; width:56px; height:30px}
+.switch input{opacity:0; width:0; height:0}
+.slider{
+  position:absolute; inset:0; border-radius: 999px; cursor: pointer;
+  background: color-mix(in oklab, #64748b 40%, transparent);
+  border: 1px solid var(--border);
+  transition: background var(--t-med), box-shadow var(--t-med);
+  box-shadow: var(--shadow-2);
+}
+.slider:before{
+  content:""; position:absolute; height:24px; width:24px; left:3px; top:2.5px;
+  border-radius: 999px; background: #fff; transition: transform var(--t-med), background var(--t-med);
+  box-shadow: 0 2px 4px rgba(0,0,0,.25);
+}
+input:checked + .slider{background: color-mix(in oklab, var(--primary) 45%, transparent)}
+input:checked + .slider:before{transform: translateX(26px)}
+
+/* Page layout */
+.container{max-width: 1200px; margin: 24px auto; padding: 0 var(--sp-4)}
+.grid{
+  display:grid; gap: var(--sp-4);
+  grid-template-columns: repeat(12, minmax(0,1fr));
+}
+.card{
+  grid-column: span 6;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  transition: transform var(--t-fast), box-shadow var(--t-med), border-color var(--t-med);
+}
+.card:hover{ transform: translateY(-2px); box-shadow: 0 16px 40px rgba(0,0,0,.35) }
+.card-header{
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px dashed var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.card-title{ margin:0; font-size: 1rem; letter-spacing:.2px }
+.card-body{ padding: var(--sp-4) }
+
+@media (max-width: 1000px){
+  .card{ grid-column: span 12; }
+}
+
+/* Inputs */
+.field{margin-bottom: var(--sp-3)}
+.field-label{display:block; margin-bottom: 8px; color: var(--muted)}
+.control{
+  display:flex; align-items:center; gap: 8px;
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  padding: 10px 12px; background: color-mix(in oklab, var(--surface) 30%, transparent);
+  transition: border-color var(--t-med), box-shadow var(--t-fast), background var(--t-med);
+}
+.control:focus-within{
+  border-color: color-mix(in oklab, var(--primary) 50%, var(--border));
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--primary) 22%, transparent);
+  background: color-mix(in oklab, var(--surface) 55%, transparent);
+}
+.control input, .control select{
+  flex:1; border: none; outline: none; background: transparent; color: var(--text);
+  font-size: .95rem;
+}
+.kbd{ font-family: var(--mono); font-size:.8rem; color: var(--muted) }
+
+/* Inline options */
+.inline{display:inline-flex; align-items:center; gap: 10px; margin-right: 16px}
+
+/* Buttons */
+.row-actions{display:flex; gap: 10px; align-items:center}
+.btn{
+  padding: 10px 14px; border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, color-mix(in oklab, #fff 18%, transparent), color-mix(in oklab, #fff 5%, transparent));
+  color: var(--text); cursor: pointer; font-weight: 600; letter-spacing:.2px;
+  transition: transform var(--t-fast), background var(--t-med), border-color var(--t-med), box-shadow var(--t-med);
+  box-shadow: var(--shadow-2);
+}
+.btn:hover{ transform: translateY(-1px); border-color: color-mix(in oklab, var(--primary) 35%, var(--border)) }
+.btn:active{ transform: translateY(0) scale(.99) }
+.btn-primary{
+  background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 45%, transparent), color-mix(in oklab, var(--primary) 25%, transparent));
+  border-color: color-mix(in oklab, var(--primary) 40%, var(--border));
+  color: #0b1220;
+}
+.btn-danger{
+  background: linear-gradient(180deg, color-mix(in oklab, var(--danger) 45%, transparent), color-mix(in oklab, var(--danger) 25%, transparent));
+  border-color: color-mix(in oklab, var(--danger) 40%, var(--border));
+  color: #1a0b0b;
+}
+
+/* Errors & status */
+.error{display:block; margin-top: 6px; color: var(--danger); font-size:.9rem}
+.hidden{display:none !important}
+
+/* Toasts */
+.toast-top, .toast-center {
+  position: fixed;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast-top {
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.toast-center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Individual toast */
+.toast {
+  min-width: 260px;
+  max-width: 420px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+  box-shadow: var(--shadow-1);
+  border: 1px solid var(--border);
+  font-weight: 600;
+  opacity: 0;
+}
+
+/* Types */
+.toast.success { border-left: 5px solid var(--success); }
+.toast.error   { border-left: 5px solid var(--danger); }
+.toast.info    { border-left: 5px solid var(--primary); }
+
+/* ========== Animations ========== */
+.toast.slide {
+  animation: toast-slide 0.4s ease forwards;
+}
+.toast.fade {
+  animation: toast-fade 0.3s ease forwards;
+}
+.toast.zoom {
+  animation: toast-zoom 0.35s cubic-bezier(.2,.8,.2,1) forwards;
+}
+
+@keyframes toast-slide {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toast-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes toast-zoom {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Modal */
+.modal-backdrop{
+  position: fixed; inset:0; z-index: 55;
+  background: color-mix(in oklab, #000 65%, transparent);
+  display:none; align-items:center; justify-content:center;
+  padding: var(--sp-4);
+  backdrop-filter: blur(4px);
+}
+.modal-backdrop.show{ display:flex; animation: fade .18s ease-out }
+@keyframes fade{ from{opacity:0} to{opacity:1} }
+
+.modal{
+  width: min(520px, 92%);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow-1);
+  overflow:hidden;
+}
+.modal-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding: var(--sp-3) var(--sp-4); border-bottom: 1px dashed var(--border);
+}
+.modal-body{ padding: var(--sp-4) }
+.modal-footer{ display:flex; gap: 10px; justify-content:flex-end; padding: var(--sp-3) var(--sp-4); border-top: 1px dashed var(--border) }
+.modal-close{ cursor: pointer }
+
+/* Multi-select */
+.multi-select{ display:flex; flex-direction:column; gap: var(--sp-2) }
+.multi-display{
+  min-height: 44px; display:flex; align-items:center; flex-wrap:wrap; gap: 8px; cursor:pointer;
+  border: 1px dashed var(--border); border-radius: var(--r-md);
+  padding: 8px 10px;
+  background: color-mix(in oklab, var(--surface) 10%, transparent);
+}
+.multi-tags{ display:flex; gap: 8px; flex-wrap:wrap }
+.tag{
+  display:inline-flex; align-items:center; gap:8px;
+  padding: 6px 10px; border-radius: 999px; font-size:.9rem; font-weight: 600;
+  border: 1px solid color-mix(in oklab, var(--primary-2) 40%, var(--border));
+  background: linear-gradient(180deg, color-mix(in oklab, var(--primary-2) 18%, transparent), color-mix(in oklab, var(--primary-2) 8%, transparent));
+  color: var(--text);
+}
+.tag button{ border:none; background: transparent; color: var(--muted); cursor:pointer; font-weight: 700 }
+
+.multi-options{
+  border: 1px solid var(--border); border-radius: var(--r-md); padding: 8px;
+  background: var(--card);
+  display:none; gap: 6px; flex-direction:column;
+  box-shadow: var(--shadow-1);
+}
+.multi-options > div{
+  padding: 8px 10px; border-radius: var(--r-md); cursor:pointer; border:1px dashed transparent;
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+.multi-options > div:hover{
+  background: color-mix(in oklab, var(--primary-2) 16%, transparent);
+  border-color: color-mix(in oklab, var(--primary-2) 30%, transparent);
+}
+.multi-close{ color: var(--muted); text-align:right; font-size:.9rem }
+
+/* Suggestions */
+.suggestions{
+  position:relative;
+  border: 1px dashed var(--border);
+  background: var(--card); border-radius: var(--r-md);
+  margin-top: 6px; padding: 4px; display:none;
+  box-shadow: var(--shadow-1);
+}
+.suggestion-item{ padding: 8px 10px; border-radius: var(--r-md); cursor:pointer }
+.suggestion-item:hover{
+  background: color-mix(in oklab, var(--primary) 18%, transparent);
+}
+
+/* Table */
+.table-wrap{ border-radius: var(--r-md); overflow: hidden; border:1px solid var(--border) }
+table{ width:100%; border-collapse: collapse; background: color-mix(in oklab, var(--surface) 12%, transparent) }
+th, td{ padding: 12px; border-bottom: 1px dashed var(--border) }
+th{
+  text-align:left; font-size:.9rem; letter-spacing:.3px; color: var(--muted);
+  background: linear-gradient(180deg, color-mix(in oklab, var(--surface) 25%, transparent), color-mix(in oklab, var(--surface) 10%, transparent));
+}
+
+/* Footer */
+.site-footer{
+  margin: 32px auto; max-width: 1200px; padding: var(--sp-3) var(--sp-4);
+  color: var(--muted); text-align:center; font-size:.95rem;
+}
+
+/* Utility */
+.sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
+
+
+
+* Make dropdown look clickable */
+.control select {
+  cursor: pointer;
+}
+
+/* Optional: change cursor when hovering over the control wrapper */
+.control:has(select) {
+  cursor: pointer;
+}
+
+.control:has(select):hover {
+  border-color: color-mix(in oklab, var(--primary) 40%, var(--border));
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent);
+}
+``
+
+/* Base transitions for the dropdown container */
+.control {
+  transition:
+    border-color var(--t-med),
+    box-shadow var(--t-med),
+    background var(--t-med),
+    transform var(--t-fast);
+}
+
+/* Animate when the select is focused (open intent approximation) */
+.control:has(select:focus),
+.control:has(select:focus-visible) {
+  border-color: color-mix(in oklab, var(--primary) 50%, var(--border));
+  box-shadow:
+    0 0 0 6px color-mix(in oklab, var(--primary) 20%, transparent),
+    var(--shadow-2);
+  background: color-mix(in oklab, var(--surface) 60%, transparent);
+  transform: translateY(-1px);
+}
+
+/* Hover flair (mouse users) */
+.control:has(select):hover {
+  border-color: color-mix(in oklab, var(--primary) 40%, var(--border));
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 14%, transparent);
+}
+
+/* Reduced motion friendly */
+@media (prefers-reduced-motion: reduce) {
+  .control {
+    transition: none;
+  }
+}
+``
+
+/* Remove native arrow */
+.control select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: transparent;
+  color: var(--text);
+  cursor: pointer;
+
+  padding-right: 44px;
+
+  /* Create a Chevron using two linear-gradients */
+  background:
+    linear-gradient(45deg, currentColor 45%, transparent 46%) right 20px center / 12px 12px no-repeat,
+    linear-gradient(-45deg, currentColor 45%, transparent 46%) right 12px center / 12px 12px no-repeat;
+  opacity: 0.95;
+}
+
+/* Focus tint—chevron follows text color (set via wrapper) */
+.control:has(select:focus),
+.control:has(select:focus-visible) {
+  color: var(--primary);
+}
+
+/* Disabled state */
+select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+``
+
+.control select.select-modern { /* styles */ }
+.control:has(select.select-modern:focus) { /* focus */ }
+
+
+/* Animate chevron on focus */
+.control select {
+  transition: background-position var(--t-med), transform var(--t-med);
+}
+.control:has(select:focus) select,
+.control:has(select:focus-visible) select {
+  transform: translateY(-1px);
+  background-position: right 10px center; /* subtle shift */
+}
+
+
+/* === Native Select Enhancements === */
+
+/* Cursor shows it's clickable */
+.control select {
+  cursor: pointer;
+}
+
+/* Optional: pointer for wrapper */
+.control:has(select) { cursor: pointer; }
+
+/* Custom arrow (SVG) and spacing */
+.control select.select-modern {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: transparent;
+  color: var(--text);
+  padding-right: 44px;
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px;
+  background-image:
+    url("data:image/svg+xml;utf8,\
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+        <path d='M7 10l5 5 5-5' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/>\
+      </svg>");
+}
+
+/* Focus tint for arrow */
+.control:has(select.select-modern:focus),
+.control:has(select.select-modern:focus-visible) {
+  border-color: color-mix(in oklab, var(--primary) 50%, var(--border));
+  box-shadow:
+    0 0 0 6px color-mix(in oklab, var(--primary) 20%, transparent),
+    var(--shadow-2);
+  background: color-mix(in oklab, var(--surface) 60%, transparent);
+  transform: translateY(-1px);
+}
+.control:has(select.select-modern:focus) select.select-modern,
+.control:has(select.select-modern:focus-visible) select.select-modern {
+  background-image:
+    url("data:image/svg+xml;utf8,\
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+        <path d='M7 10l5 5 5-5' fill='none' stroke='%2360a5fa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/>\
+      </svg>");
+}
+
+/* Hide old IE arrow */
+select::-ms-expand { display: none; }
+
+/* Disabled */
+select:disabled { cursor: not-allowed; opacity: .6; }
+
+/* === Searchable Dropdown (Combobox) === */
+
+.searchable-select {
+  position: relative;
+  gap: 8px;
+}
+.searchable-select input { flex: 1; }
+
+.searchable-toggle {
+  padding: 8px 10px; min-width: 40px; line-height: 1;
+}
+
+.searchable-list {
+  position: inherit; z-index: 70;
+  left: 0; right: 0; margin-top: 8px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow-1);
+  display: none;
+  max-height: 240px; overflow: auto;
+  backdrop-filter: blur(8px);
+}
+.searchable-list.show { display: inherit; animation: fadeIn var(--t-med); }
+
+.searchable-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px dashed var(--border);
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.searchable-item:last-child { border-bottom: none; }
+
+.searchable-item:hover {
+  background: color-mix(in oklab, var(--primary) 18%, transparent);
+}
+.searchable-item[aria-selected="true"],
+.searchable-item.active {
+  background: color-mix(in oklab, var(--primary) 28%, transparent);
+  color: #0b1220;
+}
+
+.searchable-empty { padding: 12px; color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .control,
+  .searchable-list.show { animation: none; transition: none; }
+}
+
+
+/* Prevent clipping of the popup by parent containers */
+.card,
+.card-body,
+.field,
+.control.searchable-select { position: relative; overflow: visible; }
+
+/* Make sure the popup floats above cards */
+.searchable-list { position: inherit; z-index: 100; left: 0; right: 0; margin-top: 8px; }
+
+/* Align caret button with input */
+.searchable-select { display: flex; align-items: center; gap: 8px; }
+.searchable-select input { flex: 1; height: 40px; }
+.searchable-toggle.btn { height: 40px; display: inline-flex; align-items: center; justify-content: center; padding: 0 10px; }
+
+/* Native select pointer + custom arrow */
+.control select { cursor: pointer; }
+.control select.select-modern {
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+  background-color: transparent; color: var(--text);
+  padding-right: 44px;
+  background-repeat: no-repeat; background-position: right 12px center; background-size: 18px;
+  background-image:
+    url("data:image/svg+xml;utf8,\
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+        <path d='M7 10l5 5 5-5' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/>\
+      </svg>");
+}
+.control:has(select.select-modern:focus),
+.control:has(select.select-modern:focus-visible) {
+  border-color: color-mix(in oklab, var(--primary) 50%, var(--border));
+  box-shadow: 0 0 0 6px color-mix(in oklab, var(--primary) 20%, transparent), var(--shadow-2);
+  background: color-mix(in oklab, var(--surface) 60%, transparent);
+  transform: translateY(-1px);
+}
+.control:has(select.select-modern:focus) select.select-modern,
+.control:has(select.select-modern:focus-visible) select.select-modern {
+  background-image:
+    url("data:image/svg+xml;utf8,\
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+        <path d='M7 10l5 5 5-5' fill='none' stroke='%2360a5fa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/>\
+      </svg>");
+}
+/* ================= FIX: Native select dropdown visibility ================= */
+select option,
+select optgroup {
+  color: #0f172a !important;     /* dark text */
+  background: #ffffff !important; /* white background */
+}
+
+.lab-page{ padding:20px; }
+
+.action-box{
+  height:80px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:2px dashed var(--primary);
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.drag-container{
+  display:flex;
+  gap:40px;
+  margin-top:20px;
+}
+
+.drag-box{
+  padding:15px 20px;
+  background:#2563eb;
+  color:#fff;
+  border-radius:8px;
+  cursor:grab;
+}
+
+.drop-box{
+  padding:20px;
+  border:2px dashed #22c55e;
+  border-radius:8px;
+  min-width:140px;
+  text-align:center;
+  font-weight:700;
+}
+
+.hover-grid{ display:flex; }
+.hover-card{ position:relative;width:150px;height:150px; }
+.hover-card img{ width:100%;height:100%; }
+.hover-overlay{
+  position:absolute; inset:0;
+  background:rgba(0,0,0,.6);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0; transition:.3s;
+}
+.hover-card:hover .hover-overlay{ opacity:1; }
+
+.result-box{
+  margin-top:15px;
+  padding:10px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  font-weight:600;
+}
+/* ================= ISOLATE LAB PAGES FROM MAIN UI ================= */
+
+/* Force normal document flow inside lab iframe pages */
+.lab-page,
+.lab-page * {
+  position: static !important;
+}
+
+/* Restore positioning only where explicitly needed */
+.hover-card,
+.hover-overlay {
+  position: relative !important;
+}
+
+.hover-overlay {
+  position: absolute !important;
+}
+
+/* Force vertical stacking */
+.lab-page > * {
+  display: block;
+  clear: both;
+}
+
+/* Add vertical spacing between blocks */
+.lab-page h2,
+.lab-page h3,
+.lab-page hr,
+.lab-page .hover-grid,
+.lab-page #result1,
+.lab-page #moveArea,
+.lab-page #menuBox,
+.lab-page #finalStatus,
+.lab-page button {
+  margin-bottom: 20px !important;
+}
+
+/* Ensure mouse move area has height */
+#moveArea {
+  min-height: 120px !important;
+  background: color-mix(in oklab, var(--surface) 30%, transparent);
+}
+
+/* Ensure menu box never overlaps */
+#menuBox {
+  position: static !important;
+}
+
+/* Ensure result boxes are normal flow */
+.result-box {
+  position: static !important;
+}
+
+/* ================= ISOLATE LAB PAGES FROM MAIN UI ================= */
+
+/* Force normal document flow inside lab iframe pages */
+.lab-page,
+.lab-page * {
+  position: static !important;
+}
+
+/* Restore positioning only where explicitly needed */
+.hover-card,
+.hover-overlay {
+  position: relative !important;
+}
+
+.hover-overlay {
+  position: absolute !important;
+}
+
+/* Force vertical stacking */
+.lab-page > * {
+  display: block;
+  clear: both;
+}
+
+/* Add vertical spacing between blocks */
+.lab-page h2,
+.lab-page h3,
+.lab-page hr,
+.lab-page .hover-grid,
+.lab-page #result1,
+.lab-page #moveArea,
+.lab-page #menuBox,
+.lab-page #finalStatus,
+.lab-page button {
+  margin-bottom: 20px !important;
+}
+
+/* Ensure mouse move area has height */
+#moveArea {
+  min-height: 120px !important;
+  background: color-mix(in oklab, var(--surface) 30%, transparent);
+}
+
+/* Ensure menu box never overlaps */
+#menuBox {
+  position: static !important;
+}
+
+/* Ensure result boxes are normal flow */
+.result-box {
+  position: static !important;
+}
+
+/* ================= LAB PAGE MODERN LAYOUT ================= */
+
+.lab-page{
+  padding: 24px;
+}
+
+.lab-container{
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.lab-card{
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow-1);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.lab-card-header{
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px dashed var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.lab-card-header h2{
+  margin:0;
+  font-size: 1.1rem;
+}
+
+.lab-card-body{
+  padding: var(--sp-4);
+}
+
+/* Each section inside lab */
+.lab-section{
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px dashed var(--border);
+}
+
+.lab-section:last-child{
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+/* Section title */
+.lab-section h3{
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 1rem;
+}
+
+/* Demo boxes */
+.demo-box{
+  padding: 16px;
+  border-radius: var(--r-md);
+  border: 1px dashed var(--border);
+  background: color-mix(in oklab, var(--surface) 30%, transparent);
+}
+
+/* Result box unified */
+.result-box{
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+  font-weight: 600;
+}
+
+.breadcrumb-bar {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in oklab, var(--surface) 85%, transparent);
+  font-size: 14px;
+}
+
+.crumb { color: var(--muted); font-weight: 600; text-decoration: none; }
+.crumb.home { color: var(--primary); }
+.crumb.current { color: var(--text); }
+
+.lab-nav-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}

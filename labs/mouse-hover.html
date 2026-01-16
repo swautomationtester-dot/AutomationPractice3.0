@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Isha Automation Practice – Mouse Actions</title>
+
+<link rel="icon" href="../images/isha-logo.jpeg">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+
+<style>
+/* Hover card */
+.hover-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+  gap:20px;
+}
+.hover-card{
+  position:relative;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow: var(--shadow-1);
+}
+.hover-card img{
+  width:100%;
+  display:block;
+}
+.hover-overlay{
+  position:absolute;
+  inset:0;
+  background: rgba(0,0,0,.6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  transition:.25s;
+}
+.hover-card:hover .hover-overlay{
+  opacity:1;
+}
+
+/* Hidden hover text */
+.hide{
+  display:none;
+  margin-top:10px;
+  padding:12px;
+  border-radius:10px;
+  background: var(--success);
+  color:#fff;
+  width:fit-content;
+}
+.myDIV:hover + .hide{
+  display:block;
+}
+
+/* Move area */
+#moveArea{
+  padding:20px;
+  border:2px dashed var(--border);
+  border-radius:12px;
+}
+
+/* Result boxes */
+.result-box{
+  margin-top:10px;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background: var(--card);
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<script src="../includes/header.js"></script>
+
+<!-- ================= BREADCRUMB ================= -->
+<div class="breadcrumb-bar">
+  <a href="../index.html" class="crumb home">🏠 Home</a>
+  <span class="sep">›</span>
+  <span class="crumb">Labs</span>
+  <span class="sep">›</span>
+  <span class="crumb current">Mouse Actions</span>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="container">
+<div class="grid">
+
+<section class="card">
+
+  <div class="card-header">
+    <h2 class="card-title">🖱️ Mouse Hover & Mouse Move – Actions Practice</h2>
+    <span class="kbd">hover() • mouse.move() • click()</span>
+  </div>
+
+  <div class="card-body">
+
+    <!-- ================= 1) BASIC HOVER ================= -->
+    <h3>✅ 1) Basic Hover (Hover → Click)</h3>
+
+    <div class="hover-grid">
+      <div class="hover-card">
+        <img src="https://i.pravatar.cc/300?img=1">
+        <div class="hover-overlay">
+          <button class="btn btn-primary" onclick="showResult('Profile')">View Profile</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="result1" class="result-box">Hover and click button</div>
+
+    <hr>
+
+    <!-- ================= 2) ADVANCED HOVER ================= -->
+    <h3>✅ 2) Advanced Hover (Hover → Show Hidden Text)</h3>
+
+    <button id="button-hover-over" class="btn btn-secondary myDIV">
+      Hover over me
+    </button>
+
+    <div id="hiddenText" class="hide">
+      🎉 I am shown when someone hovers over the button above.
+    </div>
+
+    <hr>
+
+    <!-- ================= 3) MOUSE MOVE ================= -->
+    <h3>✅ 3) Mouse Move (onmousemove)</h3>
+
+    <div id="moveArea" onmousemove="myMoveFunction()">
+      <p id="demo">Move your mouse inside this box.</p>
+    </div>
+
+    <hr>
+
+    <!-- ================= 4) CLICK ACTION ================= -->
+    <h3>✅ 4) Click Action (Menu Toggle Simulation)</h3>
+
+    <button id="sidebarCollapse" class="btn btn-primary" onclick="toggleMenu()">
+      ☰ Click to Toggle Menu
+    </button>
+
+    <div id="menuBox" class="result-box" style="display:none;">
+      📂 Menu Opened (Simulating sidebar)
+    </div>
+
+    <hr>
+
+    <!-- ================= STATUS ================= -->
+    <div id="finalStatus" class="result-box">
+      Perform actions above using Playwright / Selenium
+    </div>
+
+  </div>
+</section>
+
+</div>
+</div>
+
+<!-- ================= FOOTER ================= -->
+<div class="lab-nav-footer">
+  <a class="btn btn-secondary" href="../index.html">⬅ Back to Home</a>
+  <a class="btn btn-primary" href="drag-drop.html">Next ➡ Drag & Drop</a>
+</div>
+
+<footer class="site-footer">© Isha Automation</footer>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+/* 1) Basic hover result */
+function showResult(name){
+  document.getElementById("result1").innerText = "✅ Clicked: " + name;
+  document.getElementById("finalStatus").innerText = "Last action: Click on hover button";
+}
+
+/* 2) Mouse move */
+function myMoveFunction(){
+  document.getElementById("demo").innerText = "✅ Mouse is moving inside the box!";
+  document.getElementById("finalStatus").innerText = "Last action: Mouse move detected";
+}
+
+/* 3) Toggle menu */
+function toggleMenu(){
+  const box = document.getElementById("menuBox");
+  if(box.style.display === "none"){
+    box.style.display = "block";
+    document.getElementById("finalStatus").innerText = "Last action: Menu opened";
+  } else {
+    box.style.display = "none";
+    document.getElementById("finalStatus").innerText = "Last action: Menu closed";
+  }
+}
+</script>
+
+</body>
+</html>

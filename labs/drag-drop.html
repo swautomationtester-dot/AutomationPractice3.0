@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Isha Automation Practice – Drag & Drop</title>
+
+<link rel="icon" href="../images/isha-logo.jpeg">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+
+<style>
+.drag-area{
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.drag-box{
+  width: 160px;
+  height: 120px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  cursor: grab;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  color: #081225;
+  user-select: none;
+}
+
+.drag-box:active{
+  cursor: grabbing;
+}
+
+.drop-box{
+  width: 200px;
+  height: 140px;
+  border-radius: 16px;
+  border: 3px dashed var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--primary);
+  background: color-mix(in oklab, var(--surface) 30%, transparent);
+}
+
+.drop-box.over{
+  background: color-mix(in oklab, var(--primary) 20%, transparent);
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<script src="../includes/header.js"></script>
+
+<!-- ================= BREADCRUMB ================= -->
+<div class="breadcrumb-bar">
+  <a href="../index.html" class="crumb home">🏠 Home</a>
+  <span class="sep">›</span>
+  <span class="crumb">Labs</span>
+  <span class="sep">›</span>
+  <span class="crumb current">Drag & Drop</span>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="container">
+  <div class="grid">
+
+    <!-- ================= DRAG DROP ================= -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Drag & Drop</h2>
+        <span class="kbd">HTML5 Native</span>
+      </div>
+
+      <div class="card-body">
+
+        <div class="drag-area">
+
+          <div id="src"
+               class="drag-box"
+               draggable="true"
+               data-testid="drag-source">
+            DRAG ME
+          </div>
+
+          <div id="tgt"
+               class="drop-box"
+               data-testid="drop-target">
+            DROP HERE
+          </div>
+
+        </div>
+
+        <div id="result" class="kbd" style="margin-top:16px">
+          Perform drag & drop
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= AUTOMATION NOTES ================= -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Automation Notes</h2>
+        <span class="kbd">Important</span>
+      </div>
+
+      <div class="card-body">
+        <ul>
+          <li>✔ Uses native HTML5 DragEvent</li>
+          <li>✔ Selenium: Actions.dragAndDrop()</li>
+          <li>✔ Playwright: dragTo() or dispatchEvent()</li>
+          <li>✔ DataTransfer is used internally</li>
+        </ul>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ================= FOOTER NAV ================= -->
+<div class="lab-nav-footer">
+  <a class="btn btn-secondary" href="../index.html">⬅ Back to Home</a>
+  <a class="btn btn-primary" href="uploads.html">Next ➡ File Upload</a>
+</div>
+
+<footer class="site-footer">© Isha Automation</footer>
+
+<!-- ================= TOAST ================= -->
+<div id="toastTop" class="toast-top"></div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+const src = document.getElementById("src");
+const tgt = document.getElementById("tgt");
+const result = document.getElementById("result");
+
+/* Toast */
+function showToast(msg, ms=2000){
+  const container = document.getElementById("toastTop");
+
+  const toast = document.createElement("div");
+  toast.className = "toast success";
+  toast.textContent = msg;
+
+  container.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add("show"));
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 300);
+  }, ms);
+}
+
+/* Drag & Drop logic */
+src.ondragstart = e => {
+  e.dataTransfer.setData("text/plain", "drag");
+};
+
+tgt.ondragover = e => {
+  e.preventDefault();
+  tgt.classList.add("over");
+};
+
+tgt.ondragleave = () => {
+  tgt.classList.remove("over");
+};
+
+tgt.ondrop = e => {
+  e.preventDefault();
+  tgt.classList.remove("over");
+
+  result.textContent = "✅ Dropped Successfully!";
+  showToast("✅ Drag & Drop Successful");
+};
+</script>
+
+</body>
+</html>

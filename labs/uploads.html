@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Isha Automation Practice – Enterprise Upload Lab</title>
+
+<link rel="icon" href="../images/isha-logo.jpeg">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+
+<style>
+.upload-grid{
+  display:grid;
+  grid-template-columns: repeat(12, minmax(0,1fr));
+  gap: 18px;
+}
+.upload-card{ grid-column: span 6; }
+@media(max-width:900px){ .upload-card{ grid-column: span 12; } }
+
+.tabs{ display:flex; gap:10px; margin-bottom:14px; }
+.tabs button{
+  padding:8px 14px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background: var(--card);
+  font-weight:600;
+  cursor:pointer;
+}
+.tabs button.active{ background: var(--primary); color:#081225; }
+
+.panel{ display:none; }
+.panel.active{ display:block; }
+
+.drop-zone{
+  border:2px dashed var(--border);
+  border-radius: var(--r-lg);
+  padding:40px;
+  text-align:center;
+  cursor:pointer;
+}
+.drop-zone.dragover{
+  border-color: var(--primary);
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+}
+
+.progress{
+  height:10px;
+  border-radius:999px;
+  background: color-mix(in oklab, var(--surface) 60%, transparent);
+  overflow:hidden;
+  margin-top:10px;
+}
+.progress > div{
+  height:100%;
+  width:0%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-2));
+  transition: width .2s linear;
+}
+
+.file{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 12px;
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+  border-radius:10px;
+  margin-bottom:8px;
+}
+
+.search{
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  margin-bottom:10px;
+}
+</style>
+</head>
+
+<body>
+
+<script src="../includes/header.js"></script>
+
+<div class="breadcrumb-bar">
+  <a href="../index.html" class="crumb home">🏠 Home</a>
+  <span class="sep">›</span>
+  <span class="crumb">Labs</span>
+  <span class="sep">›</span>
+  <span class="crumb current">Upload</span>
+</div>
+
+<div class="container">
+<div class="grid">
+
+<section class="card">
+  <div class="card-header">
+    <h2 class="card-title">📁 Enterprise Upload System</h2>
+    <span class="kbd">Playwright / Selenium</span>
+  </div>
+
+  <div class="card-body">
+
+    <div class="tabs">
+      <button class="active" onclick="showTab('uploadTab')">Upload</button>
+      <button onclick="showTab('downloadTab')">Download</button>
+      <button onclick="showTab('historyTab')">History</button>
+    </div>
+
+    <!-- ================= UPLOAD ================= -->
+    <div id="uploadTab" class="panel active">
+
+      <div class="upload-grid">
+
+        <!-- FILECHOOSER -->
+        <section class="card upload-card">
+          <div class="card-header">
+            <h3 class="card-title">FileChooser Upload</h3>
+            <span class="kbd">ANY file type</span>
+          </div>
+          <div class="card-body">
+
+            <input type="file" id="hiddenFileInput" class="hidden" />
+
+            <div class="row-actions">
+              <button class="btn btn-primary" id="openFileChooserBtn">📂 Choose File</button>
+              <button class="btn" id="uploadChooserBtn">⬆ Upload</button>
+            </div>
+
+            <div id="fileChooserInfo" class="kbd" style="margin-top:10px"></div>
+            <div class="progress"><div id="fileChooserProgress"></div></div>
+		
+
+          </div>
+        </section>
+	
+	<!-- ================= ADVANCED ANY FILE UPLOAD ================= -->
+<section class="card upload-card">
+  <div class="card-header">
+    <h3 class="card-title">Advanced Upload (Any File)</h3>
+    <span class="kbd">No format restriction</span>
+  </div>
+  <div class="card-body">
+
+    <div id="advDropZone" class="drop-zone">
+      <h3>📦 Drop ANY files here</h3>
+      <p>or click to select</p>
+      <small class="kbd">(Any file type • Max 50MB each)</small>
+      <input type="file" id="advFileInput" multiple class="hidden">
+    </div>
+
+    <div id="advFileList" class="kbd" style="margin-top:10px"></div>
+    <div class="progress"><div id="advProgress"></div></div>
+
+    <div class="row-actions" style="margin-top:12px">
+      <button class="btn btn-primary" id="advUploadBtn">⬆ Upload Files</button>
+    </div>
+
+  </div>
+</section>
+
+	
+        <!-- DRAG DROP -->
+        <section class="card upload-card">
+          <div class="card-header">
+            <h3 class="card-title">Drag & Drop Upload</h3>
+            <span class="kbd">Multiple files</span>
+          </div>
+          <div class="card-body">
+
+            <div id="dropZone" class="drop-zone">
+              <h3>📥 Drop files here</h3>
+              <p>or click to select</p>
+              <input type="file" id="dropInput" multiple class="hidden">
+            </div>
+
+            <div id="dropInfo" class="kbd" style="margin-top:10px"></div>
+            <div class="progress"><div id="dropProgress"></div></div>
+
+          </div>
+        </section>
+
+        <!-- SETTINGS -->
+        <section class="card upload-card">
+          <div class="card-header">
+            <h3 class="card-title">Upload Settings</h3>
+            <span class="kbd">Simulation</span>
+          </div>
+          <div class="card-body">
+
+            <label class="inline">
+              <input type="checkbox" id="simulateFailure">
+              <span>Simulate upload failure</span>
+            </label>
+
+            <p class="kbd">✔ Any file format allowed<br>✔ Max size: 50 MB per file</p>
+
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- ================= DOWNLOAD ================= -->
+    <div id="downloadTab" class="panel">
+      <input class="search" id="searchBox" placeholder="Search files...">
+      <div id="uploadedList"></div>
+    </div>
+
+    <!-- ================= HISTORY ================= -->
+    <div id="historyTab" class="panel">
+      <pre id="historyList" style="font-size:13px"></pre>
+    </div>
+
+  </div>
+</section>
+
+</div>
+</div>
+
+<div class="lab-nav-footer">
+  <a class="btn btn-secondary" href="../index.html">⬅ Back</a>
+  <a class="btn btn-primary" href="alerts.html">Next ➡ Alerts</a>
+</div>
+
+<footer class="site-footer">© Isha Automation</footer>
+
+<div id="toastTop" class="toast-top"></div>
+
+<script>
+/* ================= CONFIG ================= */
+const MAX_SIZE = 50 * 1024 * 1024; // 50MB per file
+
+let uploadedFiles = [];
+let history = [];
+
+/* ================= TOAST ================= */
+function toast(msg){
+  const t = document.createElement("div");
+  t.className = "toast show info";
+  t.textContent = msg;
+  document.getElementById("toastTop").appendChild(t);
+  setTimeout(()=> t.remove(), 2500);
+}
+
+/* ================= TABS ================= */
+function showTab(id){
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+
+  document.getElementById(id).classList.add("active");
+  [...document.querySelectorAll(".tabs button")].find(b=>b.textContent.toLowerCase().includes(id.replace("Tab","").toLowerCase())).classList.add("active");
+
+  if(id==="downloadTab") renderUploaded();
+  if(id==="historyTab") renderHistory();
+}
+
+/* ================= VALIDATION ================= */
+function validateFiles(files){
+  for(const f of files){
+    if(f.size > MAX_SIZE){
+      toast("❌ File too large: " + f.name);
+      return false;
+    }
+  }
+  return true;
+}
+
+/* ================= FAKE UPLOAD ================= */
+function fakeUpload(progressEl, cb){
+  let p = 0;
+  const timer = setInterval(()=>{
+    p += 10;
+    progressEl.style.width = p + "%";
+    if(p >= 100){
+      clearInterval(timer);
+      cb();
+    }
+  }, 120);
+}
+
+/* ================= FILECHOOSER ================= */
+const hiddenInput = document.getElementById("hiddenFileInput");
+const openBtn = document.getElementById("openFileChooserBtn");
+const uploadChooserBtn = document.getElementById("uploadChooserBtn");
+const chooserInfo = document.getElementById("fileChooserInfo");
+const chooserProgress = document.getElementById("fileChooserProgress");
+
+openBtn.onclick = ()=> hiddenInput.click();
+
+hiddenInput.onchange = ()=>{
+  if(hiddenInput.files.length){
+    chooserInfo.textContent = "Selected: " + hiddenInput.files[0].name;
+  }
+};
+
+uploadChooserBtn.onclick = ()=>{
+  const files = hiddenInput.files;
+  if(!files.length) return toast("Select a file first");
+  if(!validateFiles(files)) return;
+
+  chooserProgress.style.width = "0%";
+
+  fakeUpload(chooserProgress, ()=>{
+    if(document.getElementById("simulateFailure").checked){
+      toast("❌ Upload failed (simulated)");
+      history.push({action:"UPLOAD_FAIL", time:new Date()});
+    }else{
+      const f = files[0];
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        uploadedFiles.push({name:f.name, type:f.type, content:reader.result});
+        history.push({action:"UPLOAD", file:f.name, time:new Date()});
+      };
+      reader.readAsArrayBuffer(f);
+      toast("✅ Upload success");
+    }
+  });
+};
+
+/* ================= DRAG DROP ================= */
+const dropZone = document.getElementById("dropZone");
+const dropInput = document.getElementById("dropInput");
+const dropInfo = document.getElementById("dropInfo");
+const dropProgress = document.getElementById("dropProgress");
+
+dropZone.onclick = ()=> dropInput.click();
+
+dropZone.ondragover = e => { e.preventDefault(); dropZone.classList.add("dragover"); };
+dropZone.ondragleave = ()=> dropZone.classList.remove("dragover");
+
+dropZone.ondrop = e => {
+  e.preventDefault(); dropZone.classList.remove("dragover");
+  handleDropFiles(e.dataTransfer.files);
+};
+
+dropInput.onchange = ()=> handleDropFiles(dropInput.files);
+
+function handleDropFiles(files){
+  if(!files.length) return;
+  if(!validateFiles(files)) return;
+
+  dropInfo.innerHTML = "";
+  for(const f of files){
+    dropInfo.innerHTML += "📄 " + f.name + "<br>";
+  }
+
+  dropProgress.style.width = "0%";
+
+  fakeUpload(dropProgress, ()=>{
+    if(document.getElementById("simulateFailure").checked){
+      toast("❌ Upload failed (simulated)");
+      history.push({action:"UPLOAD_FAIL", time:new Date()});
+    }else{
+      for(const f of files){
+        const reader = new FileReader();
+        reader.onload = ()=>{
+          uploadedFiles.push({name:f.name, type:f.type, content:reader.result});
+          history.push({action:"UPLOAD", file:f.name, time:new Date()});
+        };
+        reader.readAsArrayBuffer(f);
+      }
+      toast("✅ Upload success ("+files.length+" files)");
+    }
+  });
+}
+
+/* ================= DOWNLOAD ================= */
+function renderUploaded(){
+  const q = document.getElementById("searchBox").value.toLowerCase();
+  const list = document.getElementById("uploadedList");
+  list.innerHTML = "";
+
+  uploadedFiles.filter(f=>f.name.toLowerCase().includes(q)).forEach((f,i)=>{
+    list.innerHTML += `
+      <div class="file">
+        <span>✅ ${f.name}</span>
+        <span>
+          <button class="btn" onclick="downloadFile(${i})">⬇</button>
+          <button class="btn" onclick="removeFile(${i})">🗑</button>
+        </span>
+      </div>
+    `;
+  });
+}
+
+function downloadFile(i){
+  const f = uploadedFiles[i];
+  const blob = new Blob([f.content], {type:f.type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = f.name;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ================= DELETE ================= */
+function removeFile(i){
+  history.push({action:"DELETE", file: uploadedFiles[i].name, time:new Date()});
+  uploadedFiles.splice(i,1);
+  renderUploaded();
+  toast("🗑 File deleted");
+}
+
+/* ================= HISTORY ================= */
+function renderHistory(){
+  document.getElementById("historyList").textContent = JSON.stringify(history, null, 2);
+}
+
+document.getElementById("searchBox").oninput = renderUploaded;
+
+/* ================= ADVANCED ANY FILE UPLOAD ================= */
+
+const advDropZone = document.getElementById("advDropZone");
+const advFileInput = document.getElementById("advFileInput");
+const advFileList = document.getElementById("advFileList");
+const advProgress = document.getElementById("advProgress");
+const advUploadBtn = document.getElementById("advUploadBtn");
+
+let advSelectedFiles = [];
+
+/* Click opens chooser */
+advDropZone.onclick = () => advFileInput.click();
+
+/* Drag over */
+advDropZone.ondragover = e => {
+  e.preventDefault();
+  advDropZone.classList.add("dragover");
+};
+advDropZone.ondragleave = () => advDropZone.classList.remove("dragover");
+
+/* Drop */
+advDropZone.ondrop = e => {
+  e.preventDefault();
+  advDropZone.classList.remove("dragover");
+  handleAdvancedFiles(e.dataTransfer.files);
+};
+
+/* File chooser */
+advFileInput.onchange = () => handleAdvancedFiles(advFileInput.files);
+
+/* Handle files */
+function handleAdvancedFiles(files){
+  const MAX_SIZE = 50 * 1024 * 1024; // 50MB per file
+  advSelectedFiles = [];
+
+  for(const f of files){
+    if(f.size > MAX_SIZE){
+      toast("❌ File too large (>50MB): " + f.name);
+      return;
+    }
+    advSelectedFiles.push(f);
+  }
+
+  advFileList.innerHTML = "";
+  advSelectedFiles.forEach(f=>{
+    advFileList.innerHTML += `📄 ${f.name} (${Math.round(f.size/1024)} KB)<br>`;
+  });
+
+  toast("📦 Selected " + advSelectedFiles.length + " files");
+}
+
+/* Upload */
+advUploadBtn.onclick = () => {
+  if(!advSelectedFiles.length){
+    toast("⚠️ Select files first");
+    return;
+  }
+
+  advProgress.style.width = "0%";
+
+  fakeUpload(advProgress, ()=>{
+    if(document.getElementById("simulateFailure").checked){
+      toast("❌ Advanced upload failed (simulated)");
+      history.push({action:"ADV_UPLOAD_FAIL", time:new Date()});
+    } else {
+      for(const f of advSelectedFiles){
+        const reader = new FileReader();
+        reader.onload = ()=>{
+          uploadedFiles.push({name:f.name, type:f.type, content:reader.result});
+          history.push({action:"ADV_UPLOAD", file:f.name, time:new Date()});
+        };
+        reader.readAsArrayBuffer(f);
+      }
+      toast("✅ Advanced upload success ("+advSelectedFiles.length+" files)");
+    }
+  });
+};
+
+</script>
+
+</body>
+</html>

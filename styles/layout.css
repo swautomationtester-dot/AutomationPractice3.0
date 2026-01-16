@@ -1,0 +1,168 @@
+/* ================= LAYOUT ================= */
+
+/* ===== HEADER (FLOATING PILL) ===== */
+
+/* ===== HEADER (FIXED, LEFT-ALIGNED LOGO) ===== */
+
+.app-header{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+
+  height: 72px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  backdrop-filter: blur(12px);
+  background: color-mix(in oklab, var(--surface) 85%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Push page below fixed header */
+body{
+  padding-top: 72px;
+}
+
+/* Inner container */
+.header-inner{
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 20px;
+}
+
+/* Brand pill on LEFT */
+.brand-pill{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 10px 16px;
+  border-radius: 16px;
+
+  background: #ffffff;
+  color: #0f172a;
+
+  box-shadow: 0 10px 25px rgba(0,0,0,.15);
+}
+
+/* Logo */
+.logo-min{
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+/* Text */
+.title-block{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.brand-title{
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.brand-sub{
+  font-size: .85rem;
+  color: #475569;
+}
+
+/* Right side actions */
+.header-actions{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ===== BREADCRUMB ===== */
+
+.breadcrumb-bar {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.crumb { color: var(--muted); font-weight: 600; text-decoration: none; }
+.crumb.home { color: var(--primary); }
+.crumb.current { color: var(--text); }
+
+/* ===== MAIN CONTAINER ===== */
+
+.container {
+  max-width: 1200px;
+  margin: 16px auto;
+  padding: 0 20px;
+}
+
+/* ===== GRID SYSTEM ===== */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 20px;
+}
+
+/* ===== DASHBOARD ===== */
+
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px 32px;
+}
+
+/* Center dashboard title */
+.page-title,
+.page-subtitle {
+  text-align: center;
+}
+
+/* Card grid spacing */
+.card-grid {
+  margin-top: 28px;
+}
+
+/* ===== FOOTER NAV ===== */
+
+.lab-nav-footer {
+  max-width: 1200px;
+  margin: 16px auto 8px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ===== FOOTER ===== */
+
+.site-footer {
+  margin: 10px auto 20px;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* ===== KILL OLD HEADER SYSTEM COMPLETELY ===== */
+
+.header-left,
+.header-right,
+.brand,
+.title-sub {
+  display: none !important;
+}

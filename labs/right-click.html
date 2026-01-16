@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Isha Automation Practice – Right Click</title>
+
+<link rel="icon" href="../images/isha-logo.jpeg">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+
+<style>
+/* Lab specific */
+.action-box{
+  width: 220px;
+  height: 120px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border: 2px dashed var(--border);
+  border-radius: 16px;
+  cursor: context-menu;
+  font-weight: 700;
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+  transition: .2s;
+}
+
+.action-box:hover{
+  border-color: var(--primary);
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+}
+
+.result-box{
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<script src="../includes/header.js"></script>
+
+<!-- ================= BREADCRUMB ================= -->
+<div class="breadcrumb-bar">
+  <a href="../index.html" class="crumb home">🏠 Home</a>
+  <span class="sep">›</span>
+  <span class="crumb">Labs</span>
+  <span class="sep">›</span>
+  <span class="crumb current">Right Click</span>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="container">
+<div class="grid">
+
+<section class="card">
+
+  <div class="card-header">
+    <h2 class="card-title">🖱️ Right Click (Context Click) Practice</h2>
+    <span class="kbd">contextClick()</span>
+  </div>
+
+  <div class="card-body">
+
+    <p class="kbd">
+      This lab is used to practice <b>right click / context click</b> using Playwright or Selenium.
+    </p>
+
+    <div style="margin-top:20px;">
+      <div id="box" class="action-box">
+        Right Click Me
+      </div>
+
+      <div id="result" class="result-box">
+        Do right click on the box above
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="kbd">
+      👉 Automation Tips:
+      <ul>
+        <li>Playwright: <code>page.click("#box", new ClickOptions().setButton(MouseButton.RIGHT))</code></li>
+        <li>Selenium: <code>new Actions(driver).contextClick(element).perform()</code></li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+</div>
+</div>
+
+<!-- ================= FOOTER ================= -->
+<div class="lab-nav-footer">
+  <a class="btn btn-secondary" href="../index.html">⬅ Back to Home</a>
+  <a class="btn btn-primary" href="double-click.html">Next ➡ Double Click</a>
+</div>
+
+<footer class="site-footer">© Isha Automation</footer>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+document.getElementById("box").addEventListener("contextmenu", e => {
+  e.preventDefault(); // prevent browser menu
+  document.getElementById("result").innerText = "✅ Right click detected!";
+});
+</script>
+
+</body>
+</html>

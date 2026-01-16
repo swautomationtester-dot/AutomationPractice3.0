@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ISHA Automation Practice - Advanced File Upload</title>
+
+<style>
+:root {
+  --primary:#2563eb;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --text:#1f2937;
+  --success:#059669;
+  --error:#dc2626;
+}
+
+body {
+  margin:0;
+  font-family:"Segoe UI",system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.card {
+  width:520px;
+  background:var(--card);
+  border-radius:16px;
+  padding:24px;
+  box-shadow:0 10px 30px rgba(0,0,0,.1);
+}
+
+h2 { margin:0 0 5px 0; }
+
+.subtitle {
+  color:#6b7280;
+  font-size:14px;
+  margin-bottom:16px;
+}
+
+.drop-zone {
+  border:2px dashed var(--primary);
+  border-radius:14px;
+  padding:30px;
+  text-align:center;
+  color:var(--primary);
+  cursor:pointer;
+  transition:.2s;
+}
+
+.drop-zone.dragover {
+  background:#eef2ff;
+}
+
+input[type=file] { display:none; }
+
+.file-list {
+  margin-top:15px;
+  font-size:14px;
+}
+
+.file-item {
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:6px;
+  background:#f1f5f9;
+  padding:6px 10px;
+  border-radius:8px;
+}
+
+.progress-bar {
+  width:100%;
+  height:8px;
+  background:#e5e7eb;
+  border-radius:10px;
+  overflow:hidden;
+  margin-top:10px;
+}
+
+.progress {
+  height:100%;
+  width:0%;
+  background:var(--primary);
+  transition:.2s;
+}
+
+button {
+  margin-top:16px;
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:var(--primary);
+  color:white;
+  font-size:15px;
+  cursor:pointer;
+}
+
+button:hover { background:#1d4ed8; }
+
+/* Toast */
+.toast {
+  position:fixed;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#111827;
+  color:white;
+  padding:10px 20px;
+  border-radius:8px;
+  opacity:0;
+  pointer-events:none;
+  transition:.3s;
+}
+
+.toast.show { opacity:1; }
+.toast.success { background:var(--success); }
+.toast.error { background:var(--error); }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2>📁 Advanced File Upload Lab</h2>
+  <div class="subtitle">ISHA Automation Practice – Playwright / Selenium</div>
+
+  <div class="drop-zone" id="dropZone">
+    Drag & Drop files here<br>or click to browse<br>
+    <small>(ANY file format allowed • Max 50MB each)</small>
+  </div>
+
+  <!-- NO accept restriction = accepts everything -->
+  <input type="file" id="fileInput" multiple>
+
+  <div class="file-list" id="fileList"></div>
+
+  <div class="progress-bar">
+    <div class="progress" id="progress"></div>
+  </div>
+
+  <button id="uploadBtn">Upload Files</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const dropZone = document.getElementById("dropZone");
+const fileInput = document.getElementById("fileInput");
+const fileListDiv = document.getElementById("fileList");
+const uploadBtn = document.getElementById("uploadBtn");
+const progressBar = document.getElementById("progress");
+const toast = document.getElementById("toast");
+
+let selectedFiles = [];
+
+// Toast
+function showToast(msg, type) {
+  toast.textContent = msg;
+  toast.className = "toast show " + type;
+  setTimeout(() => toast.className = "toast", 2500);
+}
+
+// Validation (ONLY SIZE CHECK)
+function validateFiles(files) {
+  const MAX_SIZE = 50 * 1024 * 1024; // 50 MB per file
+
+  for (let f of files) {
+    if (f.size > MAX_SIZE) {
+      showToast("❌ File too large (>50MB): " + f.name, "error");
+      return false;
+    }
+  }
+  return true;
+}
+
+// Display files
+function renderFiles() {
+  fileListDiv.innerHTML = "";
+  selectedFiles.forEach(f => {
+    const div = document.createElement("div");
+    div.className = "file-item";
+    div.innerHTML = `<span>${f.name}</span><span>${Math.round(f.size/1024)} KB</span>`;
+    fileListDiv.appendChild(div);
+  });
+}
+
+// Click opens chooser
+dropZone.addEventListener("click", () => fileInput.click());
+
+// Drag & Drop
+dropZone.addEventListener("dragover", e => {
+  e.preventDefault();
+  dropZone.classList.add("dragover");
+});
+dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
+
+dropZone.addEventListener("drop", e => {
+  e.preventDefault();
+  dropZone.classList.remove("dragover");
+  const files = Array.from(e.dataTransfer.files);
+  if (!validateFiles(files)) return;
+  selectedFiles = files;
+  renderFiles();
+  showToast("📂 Files selected: " + files.length, "success");
+});
+
+// File chooser select
+fileInput.addEventListener("change", () => {
+  const files = Array.from(fileInput.files);
+  if (!validateFiles(files)) return;
+  selectedFiles = files;
+  renderFiles();
+  showToast("📂 Files selected: " + files.length, "success");
+});
+
+// Fake server upload simulation
+uploadBtn.addEventListener("click", () => {
+  if (selectedFiles.length === 0) {
+    showToast("⚠️ Please select files first", "error");
+    return;
+  }
+
+  progressBar.style.width = "0%";
+  let progress = 0;
+
+  showToast("⬆️ Upload started...", "success");
+
+  const interval = setInterval(() => {
+    progress += Math.random() * 15;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(interval);
+      showToast("✅ Files uploaded successfully!", "success");
+    }
+    progressBar.style.width = progress + "%";
+  }, 300);
+});
+</script>
+
+</body>
+</html>

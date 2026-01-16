@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Isha Automation Practice – Checkbox & Radio Lab</title>
+
+  <link rel="icon" href="../images/isha-logo.jpeg">
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+</head>
+
+<body>
+
+<!-- ================= HEADER (JS INCLUDE) ================= -->
+<script src="../includes/header.js"></script>
+
+<!-- ================= BREADCRUMB ================= -->
+<div class="breadcrumb-bar">
+  <a href="../index.html" class="crumb home">🏠 Home</a>
+  <span class="sep">›</span>
+  <span class="crumb current">Checkbox & Radio</span>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="container">
+  <div class="grid">
+
+    <!-- ================= RADIO BUTTONS ================= -->
+    <section class="card" data-testid="card-radio">
+      <div class="card-header">
+        <h2 class="card-title">Radio Buttons</h2>
+        <span class="kbd">Single Select</span>
+      </div>
+
+      <div class="card-body">
+        <div class="field">
+          <label class="inline">
+            <input type="radio" name="example-radio" value="one" data-testid="radio-one">
+            <span>One</span>
+          </label>
+        </div>
+
+        <div class="field">
+          <label class="inline">
+            <input type="radio" name="example-radio" value="two" data-testid="radio-two">
+            <span>Two</span>
+          </label>
+        </div>
+
+        <div class="field">
+          <label class="inline">
+            <input type="radio" name="example-radio" value="three" data-testid="radio-three">
+            <span>Three</span>
+          </label>
+        </div>
+
+        <div class="field">
+          <label class="inline">
+            <input type="radio" name="example-radio" disabled value="four" data-testid="radio-four">
+            <span>Four</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CHECKBOXES ================= -->
+    <section class="card" data-testid="card-checkbox">
+      <div class="card-header">
+        <h2 class="card-title">Checkboxes – Fruits</h2>
+        <span class="kbd">Multi Select</span>
+      </div>
+
+      <div class="card-body">
+
+        <div class="field">
+          <label class="inline">
+            <input type="checkbox" id="chk-Apple" data-testid="Test-chk-Apple">
+            <span>Apple</span>
+          </label>
+        </div>
+
+        <div class="field">
+          <label class="inline">
+            <input type="checkbox" id="chk-Mango" data-testid="Test-chk-Mango">
+            <span>Mango</span>
+          </label>
+        </div>
+
+        <div class="field">
+          <label class="inline">
+            <input type="checkbox" id="chk-Orange" disabled data-testid="Test-chk-Orange">
+            <span>Orange (Disabled)</span>
+          </label>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ================= FOOTER NAV ================= -->
+<div class="lab-nav-footer">
+  <a class="btn btn-secondary" href="../index.html">⬅ Back to Home</a>
+  <a class="btn btn-primary" href="dropdowns.html">Next ➡ Dropdowns</a>
+</div>
+
+<footer class="site-footer">© Isha Automation</footer>
+
+</body>
+</html>

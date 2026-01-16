@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Isha Automation Practice – Alerts Lab</title>
+
+  <link rel="icon" href="../images/isha-logo.jpeg">
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+</head>
+
+<body>
+
+<!-- ================= HEADER (JS INCLUDE) ================= -->
+<script src="../includes/header.js"></script>
+
+<!-- ================= BREADCRUMB ================= -->
+<div class="breadcrumb-bar">
+  <a href="../index.html" class="crumb home">🏠 Home</a>
+  <span class="sep">›</span>
+  <span class="crumb current">Alerts</span>
+</div>
+<!-- ================= CONTENT ================= -->
+<div class="container">
+  <div class="grid">
+
+    <!-- ================= ALERTS ================= -->
+    <section class="card" data-testid="card-alerts">
+      <div class="card-header">
+        <h2 class="card-title">Alerts</h2>
+        <span class="kbd">Native + Modal</span>
+      </div>
+
+      <div class="card-body">
+
+        <div class="row-actions">
+          <button id="nativeAlert" class="btn" data-testid="alert-native">Native Alert</button>
+          <button id="nativeConfirm" class="btn" data-testid="alert-native-confirm">Native Confirm</button>
+          <button id="nativePrompt" class="btn" data-testid="alert-native-prompt">Native Prompt</button>
+        </div>
+
+        <hr style="border:none; border-top:1px dashed var(--border); margin: 16px 0">
+
+        <div class="row-actions">
+          <button id="modernAlert" class="btn btn-primary" data-testid="alert-modern">Modern Alert</button>
+          <button id="modernConfirm" class="btn btn-primary" data-testid="alert-modern-confirm">Modern Confirm</button>
+          <button id="modernPrompt" class="btn btn-primary" data-testid="alert-modern-prompt">Modern Prompt</button>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ================= FOOTER NAV ================= -->
+<div class="lab-nav-footer">
+  <a class="btn btn-secondary" href="../index.html">⬅ Back to Dashboard</a>
+  <a class="btn btn-primary" href="tables.html">Next ➡ Web Tables</a>
+</div>
+
+<footer class="site-footer">© Isha Automation</footer>
+
+<!-- ================= TOASTS ================= -->
+<div id="toastTop" class="toast-top" role="alert" aria-live="polite"></div>
+<div id="toastCenter" class="toast-center" role="alert" aria-live="polite"></div>
+
+<!-- ================= MODAL ================= -->
+<div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-header">
+      <h3 id="modalTitle" style="margin:0">Modal</h3>
+      <span class="modal-close" id="modalClose">✖</span>
+    </div>
+    <div id="modalMessage" class="modal-body"></div>
+    <input id="modalInput" class="input" style="display:none;margin:12px 0" />
+    <div class="modal-footer">
+      <button id="modalCancel" class="btn">Cancel</button>
+      <button id="modalOk" class="btn btn-primary">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  /* ================= TOAST SYSTEM ================= */
+
+  function showToast(msg, type="info", ms=2200){
+    const container = document.getElementById("toastTop");
+
+    const toast = document.createElement("div");
+    toast.className = "toast " + type;
+    toast.textContent = msg;
+
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add("show"));
+
+    setTimeout(() => {
+      toast.classList.remove("show");
+      setTimeout(() => toast.remove(), 300);
+    }, ms);
+  }
+
+  /* ================= GET ELEMENTS ================= */
+
+  const nativeAlert   = document.getElementById("nativeAlert");
+  const nativeConfirm = document.getElementById("nativeConfirm");
+  const nativePrompt  = document.getElementById("nativePrompt");
+
+  const modernAlert   = document.getElementById("modernAlert");
+  const modernConfirm = document.getElementById("modernConfirm");
+  const modernPrompt  = document.getElementById("modernPrompt");
+
+  const backdrop   = document.getElementById("modalBackdrop");
+  const modalMsg   = document.getElementById("modalMessage");
+  const modalInput = document.getElementById("modalInput");
+  const modalOk    = document.getElementById("modalOk");
+  const modalCancel= document.getElementById("modalCancel");
+  const modalClose = document.getElementById("modalClose");
+
+  let modalMode = "alert";
+
+  /* ================= NATIVE ALERTS ================= */
+
+  nativeAlert.onclick = () => alert("This is a native alert!");
+
+  nativeConfirm.onclick = () => {
+    const result = confirm("Do you confirm this action?");
+    showToast(
+      result ? "You clicked OK" : "You clicked Cancel",
+      result ? "success" : "error"
+    );
+  };
+
+  nativePrompt.onclick = () => {
+    const val = prompt("Enter your name:");
+    if (val === null)
+      showToast("Prompt cancelled", "info");
+    else
+      showToast("You entered: " + val, "success");
+  };
+
+  /* ================= MODERN MODAL ================= */
+
+  function openModal(msg, mode="alert"){
+    modalMode = mode;
+    modalMsg.textContent = msg;
+    backdrop.classList.add("show");
+
+    modalCancel.style.display = (mode !== "alert") ? "inline-block" : "none";
+
+    if (mode === "prompt") {
+      modalInput.style.display = "block";
+      modalInput.value = "";
+      modalInput.focus();
+    } else {
+      modalInput.style.display = "none";
+    }
+  }
+
+  function closeModal(){
+    backdrop.classList.remove("show");
+  }
+
+  modernAlert.onclick   = () => openModal("This is a modern modal alert!", "alert");
+  modernConfirm.onclick = () => openModal("Do you want to proceed?", "confirm");
+  modernPrompt.onclick  = () => openModal("Enter your name:", "prompt");
+
+  modalOk.onclick = () => {
+    closeModal();
+
+    if (modalMode === "confirm")
+      showToast("You clicked OK", "success");
+
+    if (modalMode === "prompt")
+      showToast("You entered: " + (modalInput.value || "(empty)"), "success");
+
+    if (modalMode === "alert")
+      showToast("Alert closed", "info");
+  };
+
+  modalCancel.onclick = () => {
+    closeModal();
+    showToast("You clicked Cancel", "error");
+  };
+
+  modalClose.onclick = closeModal;
+
+  document.addEventListener("keydown", e => e.key === "Escape" && closeModal());
+  backdrop.addEventListener("click", e => e.target === backdrop && closeModal());
+
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Isha Automation Practice – Enterprise Upload</title>
+
+<link rel="icon" href="../images/isha-logo.jpeg">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+
+<style>
+/* ================= ENTERPRISE UPLOAD ================= */
+
+.tabs{
+  display:flex;
+  gap:10px;
+  margin-bottom:14px;
+}
+.tabs button{
+  padding:8px 14px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background: var(--card);
+  cursor:pointer;
+  font-weight:600;
+}
+.tabs button.active{
+  background: var(--primary);
+  color:#081225;
+}
+
+.panel{ display:none; }
+.panel.active{ display:block; }
+
+/* Upload zone */
+.drop-zone{
+  border:2px dashed var(--primary);
+  border-radius:14px;
+  padding:28px;
+  text-align:center;
+  color:var(--primary);
+  font-weight:700;
+  cursor:pointer;
+}
+.drop-zone.dragover{
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+}
+
+input[type=file]{ display:none; }
+
+/* File row */
+.file{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 12px;
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+  border-radius:10px;
+  margin-bottom:8px;
+}
+
+/* Progress */
+.progress-bar{
+  width:100%;
+  height:10px;
+  background: color-mix(in oklab, var(--surface) 60%, transparent);
+  border-radius:999px;
+  overflow:hidden;
+  margin-top:12px;
+}
+.progress{
+  height:100%;
+  width:0%;
+  background: var(--primary);
+  transition: width .2s linear;
+}
+
+/* Search */
+.search{
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  margin-bottom:10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<script src="../includes/header.js"></script>
+
+<!-- ================= BREADCRUMB ================= -->
+<div class="breadcrumb-bar">
+  <a href="../index.html" class="crumb home">🏠 Home</a>
+  <span class="sep">›</span>
+  <span class="crumb">Labs</span>
+  <span class="sep">›</span>
+  <span class="crumb current">Enterprise Upload</span>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="container">
+<div class="grid">
+
+<section class="card">
+  <div class="card-header">
+    <h2 class="card-title">📁 Enterprise Upload System</h2>
+    <span class="kbd">Upload / Download / History</span>
+  </div>
+
+  <div class="card-body">
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="active" onclick="showTab('upload')">Upload</button>
+      <button onclick="showTab('download')">Download</button>
+      <button onclick="showTab('history')">History</button>
+    </div>
+
+    <!-- UPLOAD -->
+    <div id="upload" class="panel active">
+
+      <div class="drop-zone" id="dropZone">
+        Drag & Drop files here or Click to browse<br>
+        <small>(PDF, PNG, JPG | Max 2MB each)</small>
+      </div>
+
+      <input type="file" id="fileInput" multiple>
+
+      <div id="selectedList" style="margin-top:12px"></div>
+
+      <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+      </div>
+
+      <div class="row-actions" style="margin-top:14px">
+        <button class="btn btn-primary" id="uploadBtn">⬆ Upload</button>
+      </div>
+    </div>
+
+    <!-- DOWNLOAD -->
+    <div id="download" class="panel">
+      <input class="search" id="searchBox" placeholder="Search files...">
+      <div id="uploadedList"></div>
+    </div>
+
+    <!-- HISTORY -->
+    <div id="history" class="panel">
+      <pre id="historyList" style="font-size:13px"></pre>
+    </div>
+
+  </div>
+</section>
+
+</div>
+</div>
+
+<!-- ================= FOOTER ================= -->
+<div class="lab-nav-footer">
+  <a class="btn btn-secondary" href="../index.html">⬅ Back</a>
+  <a class="btn btn-primary" href="alerts.html">Next ➡ Alerts</a>
+</div>
+
+<footer class="site-footer">© Isha Automation</footer>
+
+<!-- ================= TOAST ================= -->
+<div id="toastTop" class="toast-top"></div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+const dropZone = document.getElementById("dropZone");
+const fileInput = document.getElementById("fileInput");
+const selectedList = document.getElementById("selectedList");
+const uploadedList = document.getElementById("uploadedList");
+const historyList = document.getElementById("historyList");
+const progressBar = document.getElementById("progress");
+const searchBox = document.getElementById("searchBox");
+
+let selectedFiles = [];
+let uploadedFiles = [];
+let history = [];
+
+const MAX_SIZE = 2 * 1024 * 1024;
+const allowed = ["pdf","png","jpg","jpeg"];
+
+/* Toast */
+function showToast(msg, type="info"){
+  const t = document.createElement("div");
+  t.className = "toast show " + type;
+  t.textContent = msg;
+  document.getElementById("toastTop").appendChild(t);
+  setTimeout(()=>{ t.remove(); }, 2500);
+}
+
+/* Tabs */
+function showTab(id){
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+
+  document.getElementById(id).classList.add("active");
+  [...document.querySelectorAll(".tabs button")].find(b=>b.textContent.toLowerCase().includes(id)).classList.add("active");
+
+  if(id==="download") renderUploaded();
+  if(id==="history") renderHistory();
+}
+
+/* Validation */
+function validate(files){
+  for(let f of files){
+    const ext = f.name.split(".").pop().toLowerCase();
+    if(!allowed.includes(ext)){
+      showToast("Invalid file type: " + f.name, "error");
+      return false;
+    }
+    if(f.size > MAX_SIZE){
+      showToast("File too large (>2MB): " + f.name, "error");
+      return false;
+    }
+  }
+  return true;
+}
+
+/* Render selected */
+function renderSelected(){
+  selectedList.innerHTML = "";
+  selectedFiles.forEach(f=>{
+    selectedList.innerHTML += `<div class="file"><span>🕓 ${f.name}</span><span>${Math.round(f.size/1024)} KB</span></div>`;
+  });
+}
+
+/* Render uploaded */
+function renderUploaded(){
+  const q = searchBox.value.toLowerCase();
+  uploadedList.innerHTML = "";
+
+  uploadedFiles.filter(f=>f.name.toLowerCase().includes(q)).forEach((f,idx)=>{
+    uploadedList.innerHTML += `
+      <div class="file">
+        <span>✅ ${f.name}</span>
+        <span>
+          <button class="btn" onclick="download(${idx})">⬇</button>
+          <button class="btn" onclick="removeFile(${idx})">🗑</button>
+        </span>
+      </div>`;
+  });
+}
+
+/* Render history */
+function renderHistory(){
+  historyList.textContent = JSON.stringify(history, null, 2);
+}
+
+/* Download */
+function download(i){
+  const f = uploadedFiles[i];
+  const blob = new Blob([f.content], {type:f.type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = f.name;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* Delete */
+function removeFile(i){
+  history.push({ action:"DELETE", file: uploadedFiles[i].name, time:new Date() });
+  uploadedFiles.splice(i,1);
+  renderUploaded();
+  showToast("File deleted", "success");
+}
+
+/* Events */
+dropZone.onclick = ()=>fileInput.click();
+
+dropZone.ondragover = e => { e.preventDefault(); dropZone.classList.add("dragover"); };
+dropZone.ondragleave = ()=> dropZone.classList.remove("dragover");
+dropZone.ondrop = e => {
+  e.preventDefault(); dropZone.classList.remove("dragover");
+  const files = Array.from(e.dataTransfer.files);
+  if(!validate(files)) return;
+  selectedFiles = files;
+  renderSelected();
+};
+
+fileInput.onchange = () => {
+  const files = Array.from(fileInput.files);
+  if(!validate(files)) return;
+  selectedFiles = files;
+  renderSelected();
+};
+
+/* Upload */
+document.getElementById("uploadBtn").onclick = () => {
+  if(selectedFiles.length === 0){
+    showToast("No files selected", "error");
+    return;
+  }
+
+  progressBar.style.width = "0%";
+  let p = 0;
+  const fail = Math.random() < 0.25;
+
+  const timer = setInterval(()=>{
+    p += Math.random() * 20;
+    if(p >= 100){
+      p = 100;
+      clearInterval(timer);
+
+      if(fail){
+        showToast("Server error: Upload failed", "error");
+        history.push({ action:"UPLOAD_FAIL", time:new Date() });
+        return;
+      }
+
+      selectedFiles.forEach(f=>{
+        const reader = new FileReader();
+        reader.onload = ()=>{
+          uploadedFiles.push({ name:f.name, type:f.type, content:reader.result });
+          history.push({ action:"UPLOAD", file:f.name, time:new Date() });
+        };
+        reader.readAsArrayBuffer(f);
+      });
+
+      showToast("Upload successful", "success");
+      selectedFiles = [];
+      selectedList.innerHTML = "";
+    }
+    progressBar.style.width = p + "%";
+  }, 300);
+};
+
+searchBox.oninput = renderUploaded;
+</script>
+
+</body>
+</html>

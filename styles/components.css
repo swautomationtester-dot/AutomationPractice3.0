@@ -1,0 +1,718 @@
+/* ================= COMPONENTS ================= */
+
+/* ===== CARDS ===== */
+/* Default cards */
+.card{
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow-1);
+  transition: box-shadow .2s ease, transform .15s ease;
+}
+
+.field{
+  position: relative;
+}
+
+/* Only dropdown cards allow overflow */
+.card:has(.searchable-list),
+.card:has(#multiOptions),
+.card:has(#suggestions){
+  overflow: visible !important;
+}
+
+.card:hover{
+  box-shadow: 0 16px 36px rgba(0,0,0,.18);
+}
+
+.card-header{
+  padding: 12px 16px;
+  border-bottom: 1px dashed var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.card-title{
+  margin:0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.card-body{
+  padding: 14px 16px;
+}
+
+/* ===== FORMS ===== */
+.field{ margin-bottom: 14px; }
+
+.field-label{
+  display:block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+.control{
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 10px 12px;
+  background: color-mix(in oklab, var(--surface) 30%, transparent);
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+.control:focus-within{
+  border-color: color-mix(in oklab, var(--primary) 50%, var(--border));
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--primary) 20%, transparent);
+  background: color-mix(in oklab, var(--surface) 50%, transparent);
+}
+
+.control input,
+.control select{
+  flex:1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: .95rem;
+}
+
+/* ===== BUTTONS ===== */
+.row-actions{ display:flex; gap: 10px; }
+
+.btn{
+  padding: 10px 14px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform .12s ease, border-color .15s ease, box-shadow .15s ease;
+  text-decoration: auto;
+
+}
+
+.btn:hover{
+  transform: translateY(-1px);
+  border-color: var(--primary);
+  box-shadow: 0 6px 14px rgba(0,0,0,.12);
+}
+
+.btn:active{
+  transform: translateY(0) scale(.98);
+}
+
+.btn-primary{
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--primary) 45%, transparent),
+    color-mix(in oklab, var(--primary) 25%, transparent)
+  );
+  border-color: color-mix(in oklab, var(--primary) 40%, var(--border));
+  color: #081225;
+}
+
+.btn-secondary{
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--primary-2) 35%, transparent),
+    color-mix(in oklab, var(--primary-2) 18%, transparent)
+  );
+}
+
+/* ===== TABLES ===== */
+.table-wrap{
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border:1px solid var(--border);
+}
+
+table{
+  width:100%;
+  border-collapse: collapse;
+  background: color-mix(in oklab, var(--surface) 20%, transparent);
+}
+
+th, td{
+  padding: 12px;
+  border-bottom: 1px dashed var(--border);
+}
+
+th{
+  color: var(--muted);
+  font-weight: 700;
+  font-size: .85rem;
+}
+
+/* ================= DASHBOARD ================= */
+
+/* Dashboard grid */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+/* Dashboard cards */
+.lab-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-1);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+.lab-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--primary);
+  box-shadow: 0 18px 45px rgba(0,0,0,.18);
+}
+
+.lab-icon {
+  font-size: 42px;
+  margin-bottom: 10px;
+}
+
+.lab-title {
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.lab-desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+/* Validation states */
+.control.valid { border-color: var(--success) !important; }
+.control.invalid { border-color: var(--danger) !important; }
+
+/* Tooltip-style error */
+.error {
+  display: block;
+  margin-top: 6px;
+  font-size: .85rem;
+  color: var(--danger);
+  background: color-mix(in oklab, var(--danger) 12%, transparent);
+  border: 1px solid color-mix(in oklab, var(--danger) 40%, transparent);
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.hidden { display: none !important; }
+/* Password strength meter */
+.strength-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--surface) 60%, transparent);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.strength-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  transition: width .25s ease, background .25s ease;
+}
+
+.strength-weak { background: var(--danger); }
+.strength-medium { background: var(--warning); }
+.strength-strong { background: var(--success); }
+
+
+/* ================= MODAL ================= */
+
+.modal-backdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+
+.modal-backdrop.show{
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal{
+  width: min(420px, 92vw);
+  background: var(--card);
+  border-radius: 14px;
+  box-shadow: 0 25px 60px rgba(0,0,0,.35);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  animation: modalPop .18s ease;
+}
+
+@keyframes modalPop{
+  from { transform: scale(.92); opacity: .6; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.modal-header{
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed var(--border);
+}
+
+.modal-body{
+  padding: 16px;
+}
+
+.modal-footer{
+  padding: 12px 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px dashed var(--border);
+}
+
+.modal-close{
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* ================= TOASTS ================= */
+
+.toast-top{
+  position: fixed;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6000;
+}
+
+.toast-center{
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 6000;
+}
+
+.toast{
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 30px rgba(0,0,0,.25);
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-weight: 600;
+  margin-top: 10px;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all .25s ease;
+}
+
+.toast.show{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast.success{ border-color: var(--success); }
+.toast.error{ border-color: var(--danger); }
+.toast.info{ border-color: var(--primary); }
+
+.toast-top{
+  position: fixed;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6000;
+}
+
+.toast{
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 30px rgba(0,0,0,.25);
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-weight: 600;
+  margin-top: 10px;
+
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all .25s ease;
+}
+
+.toast.show{
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast.success{ border-color: var(--success); }
+.toast.error{ border-color: var(--danger); }
+.toast.info{ border-color: var(--primary); }
+
+/* ================= USER AVATAR MENU ================= */
+
+.user-menu{
+  position: relative;
+}
+
+.avatar-btn{
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid var(--border);
+  transition: box-shadow .2s ease, transform .1s ease;
+}
+
+.avatar-btn:hover{
+  box-shadow: 0 6px 16px rgba(0,0,0,.25);
+  transform: translateY(-1px);
+}
+
+.avatar-btn img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Dropdown panel */
+.user-dropdown{
+  position: absolute;
+  right: 0;
+  top: calc(100% + 12px);
+
+  min-width: 220px;
+
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 18px 45px rgba(0,0,0,.35);
+
+  padding: 8px;
+  z-index: 7000;
+
+  opacity: 0;
+  transform: translateY(-8px) scale(.98);
+  pointer-events: none;
+
+  transition: all .18s ease;
+}
+
+.user-dropdown.show{
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+/* User info block */
+.user-info{
+  padding: 10px 12px;
+}
+
+.user-name{
+  font-weight: 700;
+}
+
+.user-email{
+  font-size: .85rem;
+  color: var(--muted);
+}
+
+/* Divider */
+.dropdown-sep{
+  height: 1px;
+  background: var(--border);
+  margin: 6px 0;
+}
+
+/* Menu items */
+.dropdown-item{
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.dropdown-item:hover{
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+}
+
+.dropdown-item.danger{
+  color: var(--danger);
+}
+
+/* ================= FLOATING DROPDOWN PANELS ================= */
+
+.searchable-list,
+#multiOptions,
+#suggestions{
+  position: relative;
+  left: 0;
+  right: 0;
+  top: 100%;
+  margin-top: 6px;
+
+  max-height: 260px;
+  overflow-y: auto;
+
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(0,0,0,.28);
+
+  z-index: 5000;
+  display: none;
+}
+
+/* Dropdown items */
+.searchable-list > div,
+#suggestions > div,
+#multiOptions > div{
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px dashed var(--border);
+}
+
+.searchable-list > div:hover,
+#suggestions > div:hover,
+#multiOptions > div:hover{
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+}
+
+.searchable-list > div:last-child,
+#suggestions > div:last-child,
+#multiOptions > div:last-child{
+  border-bottom: none;
+}
+
+
+/* ================= MULTI SELECT ================= */
+
+.multi-input{
+  min-height: 44px;
+  flex-wrap: wrap;
+  cursor: pointer;
+}
+
+.multi-tags{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.multi-placeholder{
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+/* Tag pill */
+.multi-tag{
+  background: color-mix(in oklab, var(--primary) 15%, transparent);
+  border: 1px solid color-mix(in oklab, var(--primary) 40%, var(--border));
+  color: var(--text);
+  border-radius: 999px;
+  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .85rem;
+  font-weight: 600;
+}
+
+.multi-tag button{
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Dropdown panel */
+.multi-panel{
+  display: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  margin-top: 8px;
+
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(0,0,0,.25);
+  z-index: 9999;
+}
+
+.multi-panel.show{
+  display: block;
+}
+
+.multi-panel-header{
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed var(--border);
+}
+
+.multi-close{
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Options */
+.multi-panel-body div{
+  padding: 12px 14px;
+  cursor: pointer;
+  border-bottom: 1px dashed var(--border);
+}
+
+.multi-panel-body div:hover{
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+}
+
+.multi-panel-body div:last-child{
+  border-bottom: none;
+}
+
+/* Allow dropdown panels to overflow cards */
+.card,
+.card-body,
+.field,
+.container,
+.grid {
+  overflow: visible !important;
+}
+
+
+.searchable-list,
+#suggestions,
+.multi-panel{
+  opacity: 1 !important;
+  transform: none !important;
+  will-change: auto !important;
+}
+
+/* When dropdown is open, disable card hover effects */
+.card:has(.searchable-list[style*="block"]),
+.card:has(.multi-panel.show),
+.card:has(#suggestions[style*="block"]){
+  transform: none !important;
+}
+
+/* ================= SOLID DROPDOWN OVERRIDE ================= */
+
+/* Make dropdown panels fully opaque */
+.searchable-list,
+#suggestions,
+.multi-panel,
+#multiOptions{
+  background: var(--surface) !important;   /* solid color */
+  backdrop-filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.searchable-list > div,
+#suggestions > div,
+.multi-panel-body div{
+  background: var(--surface);
+}
+
+.searchable-list,
+#suggestions,
+.multi-panel{
+  transition: none !important;
+}
+
+/* ================= FLAG LANGUAGE SELECT ================= */
+
+.lang-select{
+  position: relative;
+  max-width: 280px;
+}
+
+.lang-btn{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.lang-btn .flag{
+  font-size: 20px;
+}
+
+.lang-btn .caret{
+  opacity: .7;
+}
+
+/* Dropdown */
+.lang-menu{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(0,0,0,.28);
+  display: none;
+  z-index: 5000;
+}
+
+.lang-menu.show{
+  display: block;
+}
+
+/* Items */
+.lang-item{
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.lang-item:hover{
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+}
+
+.lang-item .flag{
+  font-size: 20px;
+}
+
+.lang-menu{
+  display:none;
+}
+.lang-menu.show{
+  display:block;
+}

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Isha Automation Practice – Shadow DOM</title>
+
+<link rel="icon" href="../images/isha-logo.jpeg">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+
+<style>
+.shadow-card{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:14px;
+  border-radius: var(--r-md);
+  border:1px solid var(--border);
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+}
+
+.shadow-card input{
+  flex:1;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+}
+
+.shadow-card button{
+  padding:10px 14px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--primary) 45%, transparent),
+    color-mix(in oklab, var(--primary) 25%, transparent)
+  );
+  font-weight:700;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<script src="../includes/header.js"></script>
+
+<!-- ================= BREADCRUMB ================= -->
+<div class="breadcrumb-bar">
+  <a href="../index.html" class="crumb home">🏠 Home</a>
+  <span class="sep">›</span>
+  <span class="crumb">Labs</span>
+  <span class="sep">›</span>
+  <span class="crumb current">Shadow DOM</span>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="container">
+<div class="grid">
+
+<!-- ================= BASIC SHADOW ================= -->
+<section class="card">
+  <div class="card-header">
+    <h2 class="card-title">Shadow DOM – Basic Component</h2>
+    <span class="kbd">open shadowRoot</span>
+  </div>
+
+  <div class="card-body">
+    <shadow-login></shadow-login>
+    <div class="kbd" style="margin-top:12px">
+      💡 Locate input inside shadowRoot and click login
+    </div>
+  </div>
+</section>
+
+<!-- ================= NESTED SHADOW ================= -->
+<section class="card">
+  <div class="card-header">
+    <h2 class="card-title">Shadow DOM – Nested</h2>
+    <span class="kbd">shadow inside shadow</span>
+  </div>
+
+  <div class="card-body">
+    <shadow-parent></shadow-parent>
+    <div class="kbd" style="margin-top:12px">
+      💡 Pierce multiple shadow roots
+    </div>
+  </div>
+</section>
+
+<!-- ================= SHADOW + IFRAME ================= -->
+<section class="card">
+  <div class="card-header">
+    <h2 class="card-title">Shadow DOM + iFrame</h2>
+    <span class="kbd">frameLocator()</span>
+  </div>
+
+  <div class="card-body">
+
+    <iframe
+      id="shadowIframe"
+      data-testid="shadow-iframe"
+      style="width:100%; min-height:220px; border-radius:12px; border:1px solid var(--border); background: var(--card)">
+    </iframe>
+
+    <div id="iframeResult" class="kbd" style="margin-top:12px">
+      Waiting for iframe action...
+    </div>
+
+  </div>
+</section>
+
+</div>
+</div>
+
+<!-- ================= FOOTER ================= -->
+<div class="lab-nav-footer">
+  <a class="btn btn-secondary" href="../index.html">⬅ Back</a>
+  <a class="btn btn-primary" href="iframe.html">Next ➡ iFrame</a>
+</div>
+
+<footer class="site-footer">© Isha Automation</footer>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+/* ================= BASIC SHADOW ================= */
+class ShadowLogin extends HTMLElement {
+  constructor(){
+    super();
+    const s = this.attachShadow({mode:'open'});
+    s.innerHTML = `
+      <div class="shadow-card">
+        <input id="user" placeholder="username"/>
+        <button id="btn">Login</button>
+      </div>
+    `;
+    s.getElementById("btn").onclick = () => {
+      alert("Shadow Login: " + s.getElementById("user").value);
+    };
+  }
+}
+customElements.define("shadow-login", ShadowLogin);
+
+/* ================= NESTED ================= */
+class ShadowChild extends HTMLElement {
+  constructor(){
+    super();
+    const s = this.attachShadow({mode:"open"});
+    s.innerHTML = `
+      <div class="shadow-card">
+        <input id="childInput" placeholder="nested input"/>
+        <button id="childBtn">Click</button>
+      </div>
+    `;
+    s.getElementById("childBtn").onclick = () => {
+      alert("Nested Shadow: " + s.getElementById("childInput").value);
+    };
+  }
+}
+customElements.define("shadow-child", ShadowChild);
+
+class ShadowParent extends HTMLElement {
+  constructor(){
+    super();
+    const s = this.attachShadow({mode:"open"});
+    s.innerHTML = `<shadow-child></shadow-child>`;
+  }
+}
+customElements.define("shadow-parent", ShadowParent);
+
+/* ================= IFRAME SHADOW ================= */
+const iframe = document.getElementById("shadowIframe");
+
+const iframeHTML = `
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="font-family:system-ui;padding:20px;background:#f5f7fb">
+
+  <shadow-login></shadow-login>
+
+  <script>
+    class ShadowLogin extends HTMLElement {
+      constructor(){
+        super();
+        const s = this.attachShadow({mode:"open"});
+        s.innerHTML = \`
+          <div style="display:flex;gap:12px;padding:14px;border-radius:12px;border:1px solid #ccc;background:#fff">
+            <input id="user" placeholder="iframe user" style="flex:1;padding:10px;border-radius:8px;border:1px solid #ccc"/>
+            <button id="btn" style="padding:10px 14px;border-radius:8px;border:1px solid #888;cursor:pointer">Login</button>
+          </div>
+        \`;
+
+        s.getElementById("btn").onclick = () => {
+          parent.postMessage(
+            { type: "iframe-shadow-login", value: s.getElementById("user").value },
+            "*"
+          );
+        };
+      }
+    }
+    customElements.define("shadow-login", ShadowLogin);
+  <\/script>
+
+</body>
+</html>
+`;
+
+iframe.srcdoc = iframeHTML;
+
+/* ================= IFRAME MESSAGE ================= */
+window.addEventListener("message", e => {
+  if(e.data && e.data.type === "iframe-shadow-login"){
+    document.getElementById("iframeResult").textContent =
+      "Iframe Shadow Login Value: " + e.data.value;
+  }
+});
+</script>
+
+</body>
+</html>

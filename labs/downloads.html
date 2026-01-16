@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Isha Automation Practice – File Downloads</title>
+
+  <link rel="icon" href="../images/isha-logo.jpeg">
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+
+  <style>
+    .file-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .file-row:last-child { border-bottom: none; }
+
+    .file-name { font-weight: 700; }
+    .file-meta { color: var(--muted); font-size: .85rem; }
+
+    .fake-progress {
+      height: 10px;
+      border-radius: 999px;
+      background: color-mix(in oklab, var(--surface) 60%, transparent);
+      overflow: hidden;
+      margin-top: 12px;
+      display: none;
+    }
+    .fake-progress > div {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-2));
+      transition: width .2s;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ================= HEADER (JS INCLUDE) ================= -->
+<script src="../includes/header.js"></script>
+
+<!-- ================= BREADCRUMB ================= -->
+<div class="breadcrumb-bar">
+  <a href="../index.html" class="crumb home">🏠 Home</a>
+  <span class="sep">›</span>
+  <span class="crumb current">File Downloads</span>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="container">
+  <div class="grid">
+
+    <!-- ================= FORCED DOWNLOAD ================= -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Forced Download (Automation Safe)</h2>
+        <span class="kbd">Blob + Fallback</span>
+      </div>
+
+      <div class="card-body">
+
+        <div class="file-row">
+          <div>
+            <div class="file-name">sample.pdf</div>
+            <div class="file-meta">PDF</div>
+          </div>
+          <button class="btn btn-primary" data-testid="download-pdf"
+            onclick="forceDownload('../assets/sample.pdf','sample.pdf')">
+            ⬇ Download
+          </button>
+        </div>
+
+        <div class="file-row">
+          <div>
+            <div class="file-name">image.png</div>
+            <div class="file-meta">PNG</div>
+          </div>
+          <button class="btn" data-testid="download-png"
+            onclick="forceDownload('../assets/image.png','image.png')">
+            ⬇ Download
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= GENERATED DOWNLOAD ================= -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Generated Download</h2>
+        <span class="kbd">JS Blob</span>
+      </div>
+
+      <div class="card-body">
+        <div class="row-actions">
+          <button class="btn btn-primary" id="generateTxtBtn" data-testid="download-generated">
+            ⬇ Generate & Download TXT
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DELAYED DOWNLOAD ================= -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Delayed Download</h2>
+        <span class="kbd">Wait Strategy</span>
+      </div>
+
+      <div class="card-body">
+        <div class="row-actions">
+          <button class="btn" id="delayedDownloadBtn" data-testid="download-delayed">
+            ⏳ Prepare & Download
+          </button>
+        </div>
+
+        <div class="fake-progress" id="delayProgress">
+          <div id="delayBar"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FAILURE SIMULATION ================= -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Failure Simulation</h2>
+        <span class="kbd">Negative Case</span>
+      </div>
+
+      <div class="card-body">
+
+        <label class="inline">
+          <input type="checkbox" id="simulateDownloadFail">
+          <span>Simulate download failure</span>
+        </label>
+
+        <div class="row-actions" style="margin-top:12px">
+          <button class="btn btn-danger" id="failDownloadBtn" data-testid="download-fail">
+            ⛔ Start Download
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ================= FOOTER NAV ================= -->
+<div class="lab-nav-footer">
+  <a class="btn btn-secondary" href="../index.html">⬅ Back to Home</a>
+  <a class="btn btn-primary" href="uploads.html">Next ➡ Uploads</a>
+</div>
+
+<footer class="site-footer">© Isha Automation</footer>
+
+<!-- ================= TOAST ================= -->
+<div id="toastTop" class="toast-top"></div>
+
+<!-- ================= SCRIPTS ================= -->
+<script>
+/* ================= TOAST ================= */
+function showToast(msg, ms=2500){
+  const container = document.getElementById("toastTop");
+
+  const toast = document.createElement("div");
+  toast.className = "toast info";
+  toast.textContent = msg;
+
+  container.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add("show"));
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 300);
+  }, ms);
+}
+
+/* ================= FORCE DOWNLOAD ================= */
+async function forceDownload(url, filename){
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    URL.revokeObjectURL(blobUrl);
+
+    showToast("✅ Download started: " + filename);
+  } catch (e) {
+    console.error(e);
+    showToast("❌ Download failed. Check console & file path.");
+  }
+}
+
+/* ================= GENERATED TXT ================= */
+document.getElementById("generateTxtBtn").onclick = () => {
+  const content = "Isha Automation Download Lab\nGenerated at: " + new Date();
+  const blob = new Blob([content], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "generated.txt";
+  a.click();
+
+  showToast("✅ Generated file downloaded");
+};
+
+/* ================= DELAYED DOWNLOAD ================= */
+const delayBtn = document.getElementById("delayedDownloadBtn");
+const progress = document.getElementById("delayProgress");
+const bar = document.getElementById("delayBar");
+
+delayBtn.onclick = () => {
+  progress.style.display = "block";
+  bar.style.width = "0%";
+
+  let p = 0;
+  const timer = setInterval(() => {
+    p += 10;
+    bar.style.width = p + "%";
+    if (p >= 100) {
+      clearInterval(timer);
+      progress.style.display = "none";
+
+      const blob = new Blob(["Delayed file from Isha Lab"], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "delayed.txt";
+      a.click();
+
+      showToast("✅ Delayed download completed");
+    }
+  }, 200);
+};
+
+/* ================= FAILURE SIMULATION ================= */
+document.getElementById("failDownloadBtn").onclick = () => {
+  if (document.getElementById("simulateDownloadFail").checked) {
+    showToast("❌ Download failed (simulated)");
+  } else {
+    const blob = new Blob(["Success file"], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "success.txt";
+    a.click();
+
+    showToast("✅ Download success");
+  }
+};
+</script>
+
+</body>
+</html>

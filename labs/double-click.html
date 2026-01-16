@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Isha Automation Practice – Double Click Lab</title>
+
+  <link rel="icon" href="../images/isha-logo.jpeg">
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/layout.css">
+  <link rel="stylesheet" href="../styles/components.css">
+</head>
+
+<body>
+
+<!-- ================= HEADER (JS INCLUDE) ================= -->
+<script src="../includes/header.js"></script>
+
+<!-- ================= BREADCRUMB ================= -->
+<div class="breadcrumb-bar">
+  <a href="../index.html" class="crumb home">🏠 Home</a>
+  <span class="sep">›</span>
+  <span class="crumb current">Double Click</span>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="container">
+  <div class="grid">
+
+    <!-- ================= DOUBLE CLICK ================= -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Double Click Practice</h2>
+        <span class="kbd">Mouse Actions</span>
+      </div>
+
+      <div class="card-body">
+
+        <div class="field">
+          <div class="control" style="justify-content:center; cursor:pointer;">
+            <div id="box"
+                 style="
+                   padding: 30px 40px;
+                   border-radius: 12px;
+                   background: linear-gradient(135deg, #60a5fa, #a78bfa);
+                   color: #081225;
+                   font-weight: 800;
+                   font-size: 18px;
+                   user-select: none;
+                 ">
+              🖱️ Double Click Me
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <div id="result" class="kbd">
+            Do double click on the box above
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ================= FOOTER NAV ================= -->
+<div class="lab-nav-footer">
+  <a class="btn btn-secondary" href="../index.html">⬅ Back to Home</a>
+  <a class="btn btn-primary" href="drag-drop.html">Next ➡ Drag & Drop</a>
+</div>
+
+<footer class="site-footer">© Isha Automation</footer>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+const box = document.getElementById("box");
+const result = document.getElementById("result");
+
+box.ondblclick = () => {
+  result.textContent = "✅ Double click success!";
+  result.style.color = "var(--success)";
+};
+</script>
+
+</body>
+</html>

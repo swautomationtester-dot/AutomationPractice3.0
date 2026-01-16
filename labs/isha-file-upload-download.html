@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Isha Automation Practice – Upload & Download</title>
+
+<link rel="icon" href="../images/isha-logo.jpeg">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+
+<style>
+/* ================= UPLOAD ZONE ================= */
+
+.drop-zone {
+  border: 2px dashed var(--primary);
+  border-radius: 14px;
+  padding: 28px;
+  text-align: center;
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 700;
+  transition: .2s;
+}
+
+.drop-zone.dragover {
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+}
+
+input[type=file] { display:none; }
+
+/* File list */
+.file-list {
+  margin-top: 14px;
+}
+
+.file-item {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 12px;
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.file-actions{
+  display:flex;
+  gap:8px;
+}
+
+/* Progress */
+.progress-bar {
+  width:100%;
+  height:10px;
+  background: color-mix(in oklab, var(--surface) 60%, transparent);
+  border-radius:10px;
+  overflow:hidden;
+  margin-top:14px;
+}
+
+.progress {
+  height:100%;
+  width:0%;
+  background: var(--primary);
+  transition: width .2s linear;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<script src="../includes/header.js"></script>
+
+<!-- ================= BREADCRUMB ================= -->
+<div class="breadcrumb-bar">
+  <a href="../index.html" class="crumb home">🏠 Home</a>
+  <span class="sep">›</span>
+  <span class="crumb">Labs</span>
+  <span class="sep">›</span>
+  <span class="crumb current">Upload & Download</span>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="container">
+<div class="grid">
+
+<!-- ================= UPLOAD CARD ================= -->
+<section class="card">
+  <div class="card-header">
+    <h2 class="card-title">📁 Upload Files</h2>
+    <span class="kbd">Drag & Drop / FileChooser</span>
+  </div>
+
+  <div class="card-body">
+
+    <div class="drop-zone" id="dropZone">
+      Drag & Drop files here<br>
+      or click to browse<br>
+      <small>(PDF, PNG, JPG only)</small>
+    </div>
+
+    <input type="file" id="fileInput" multiple accept=".pdf,.png,.jpg,.jpeg">
+
+    <div class="file-list" id="fileList"></div>
+
+    <div class="progress-bar">
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <div class="row-actions" style="margin-top:16px">
+      <button class="btn btn-primary" id="uploadBtn">⬆ Upload Files</button>
+    </div>
+
+  </div>
+</section>
+
+</div>
+</div>
+
+<!-- ================= FOOTER NAV ================= -->
+<div class="lab-nav-footer">
+  <a class="btn btn-secondary" href="file-upload.html">⬅ Back</a>
+  <a class="btn btn-primary" href="alerts.html">Next ➡ Alerts</a>
+</div>
+
+<footer class="site-footer">© Isha Automation</footer>
+
+<!-- ================= TOAST ================= -->
+<div id="toastTop" class="toast-top"></div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+const dropZone = document.getElementById("dropZone");
+const fileInput = document.getElementById("fileInput");
+const fileListDiv = document.getElementById("fileList");
+const uploadBtn = document.getElementById("uploadBtn");
+const progressBar = document.getElementById("progress");
+
+let selectedFiles = [];
+let uploadedFiles = [];
+
+/* Toast */
+function showToast(msg, type="info") {
+  const toast = document.createElement("div");
+  toast.className = "toast show " + type;
+  toast.textContent = msg;
+  document.getElementById("toastTop").appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
+}
+
+/* Validation */
+function validateFiles(files) {
+  const allowed = ["pdf","png","jpg","jpeg"];
+  for (let f of files) {
+    const ext = f.name.split(".").pop().toLowerCase();
+    if (!allowed.includes(ext)) {
+      showToast("❌ Only PDF, PNG, JPG allowed!", "error");
+      return false;
+    }
+  }
+  return true;
+}
+
+/* Render */
+function renderFiles() {
+  fileListDiv.innerHTML = "";
+
+  selectedFiles.forEach((f, idx) => {
+    const div = document.createElement("div");
+    div.className = "file-item";
+    div.innerHTML = `
+      <span>🕓 ${f.name}</span>
+      <div class="file-actions">
+        <button class="btn" onclick="removeSelected(${idx})">Remove</button>
+      </div>
+    `;
+    fileListDiv.appendChild(div);
+  });
+
+  uploadedFiles.forEach((f, idx) => {
+    const div = document.createElement("div");
+    div.className = "file-item";
+    div.innerHTML = `
+      <span>✅ ${f.name}</span>
+      <div class="file-actions">
+        <button class="btn" onclick="downloadFile(${idx})">⬇ Download</button>
+      </div>
+    `;
+    fileListDiv.appendChild(div);
+  });
+}
+
+window.removeSelected = function(index){
+  selectedFiles.splice(index,1);
+  renderFiles();
+};
+
+window.downloadFile = function(index){
+  const file = uploadedFiles[index];
+  const blob = new Blob([file.content], { type: file.type });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = file.name;
+  a.click();
+
+  URL.revokeObjectURL(url);
+};
+
+/* Events */
+dropZone.onclick = () => fileInput.click();
+
+dropZone.ondragover = e => { e.preventDefault(); dropZone.classList.add("dragover"); };
+dropZone.ondragleave = () => dropZone.classList.remove("dragover");
+
+dropZone.ondrop = e => {
+  e.preventDefault();
+  dropZone.classList.remove("dragover");
+  const files = Array.from(e.dataTransfer.files);
+  if (!validateFiles(files)) return;
+  selectedFiles.push(...files);
+  renderFiles();
+  showToast("Files added", "success");
+};
+
+fileInput.onchange = () => {
+  const files = Array.from(fileInput.files);
+  if (!validateFiles(files)) return;
+  selectedFiles.push(...files);
+  renderFiles();
+  showToast("Files added", "success");
+};
+
+uploadBtn.onclick = () => {
+  if (selectedFiles.length === 0) {
+    showToast("Select files first", "error");
+    return;
+  }
+
+  progressBar.style.width = "0%";
+  let p = 0;
+
+  const timer = setInterval(() => {
+    p += 12;
+    if (p >= 100) {
+      p = 100;
+      clearInterval(timer);
+
+      const toUpload = [...selectedFiles];
+      selectedFiles = [];
+
+      toUpload.forEach(f => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          uploadedFiles.push({
+            name: f.name,
+            type: f.type,
+            content: reader.result
+          });
+          renderFiles();
+        };
+        reader.readAsArrayBuffer(f);
+      });
+
+      showToast("Upload completed!", "success");
+    }
+    progressBar.style.width = p + "%";
+  }, 200);
+};
+</script>
+
+</body>
+</html>

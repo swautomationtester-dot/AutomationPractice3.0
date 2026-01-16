@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Isha Automation Practice – Drag & Drop Upload</title>
+
+<link rel="icon" href="../images/isha-logo.jpeg">
+<link rel="stylesheet" href="../styles/base.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/components.css">
+
+<style>
+.drop-zone{
+  height: 240px;
+  border: 3px dashed var(--primary);
+  border-radius: 16px;
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  transition: .2s;
+  text-align: center;
+}
+
+.drop-zone.dragover{
+  background: color-mix(in oklab, var(--primary) 15%, transparent);
+  border-color: var(--primary-2);
+  transform: scale(1.02);
+}
+
+.upload-list{
+  margin-top: 14px;
+  font-size: .9rem;
+  color: var(--text);
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER (JS INCLUDE) ================= -->
+<script src="../includes/header.js"></script>
+
+<!-- ================= BREADCRUMB ================= -->
+<div class="breadcrumb-bar">
+  <a href="../index.html" class="crumb home">🏠 Home</a>
+  <span class="sep">›</span>
+  <span class="crumb current">File Upload (Drag & Drop)</span>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="container">
+  <div class="grid">
+
+    <!-- ================= DRAG DROP UPLOAD ================= -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Custom Drag & Drop Upload</h2>
+        <span class="kbd">No &lt;input type="file"&gt;</span>
+      </div>
+
+      <div class="card-body">
+
+        <div id="dropZone" class="drop-zone" data-testid="drop-zone">
+          📂 Drop files here
+          <div class="upload-list" id="fileList"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= AUTOMATION NOTES ================= -->
+    <section class="card">
+      <div class="card-header">
+        <h2 class="card-title">Automation Challenge</h2>
+        <span class="kbd">Advanced</span>
+      </div>
+
+      <div class="card-body">
+        <ul>
+          <li>✔ No input[type=file] available</li>
+          <li>✔ Must simulate DragEvent + DataTransfer</li>
+          <li>✔ Playwright: use <code>page.dispatchEvent()</code></li>
+          <li>✔ Selenium: use JS + DataTransfer</li>
+        </ul>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ================= FOOTER NAV ================= -->
+<div class="lab-nav-footer">
+  <a class="btn btn-secondary" href="../index.html">⬅ Back to Home</a>
+  <a class="btn btn-primary" href="downloads.html">Next ➡ Downloads</a>
+</div>
+
+<footer class="site-footer">© Isha Automation</footer>
+
+<!-- ================= TOAST ================= -->
+<div id="toastTop" class="toast-top"></div>
+
+<!-- ================= SCRIPT ================= -->
+<script>
+const dropZone = document.getElementById("dropZone");
+const fileList = document.getElementById("fileList");
+
+/* Toast */
+function showToast(msg, ms=2500){
+  const container = document.getElementById("toastTop");
+
+  const toast = document.createElement("div");
+  toast.className = "toast info";
+  toast.textContent = msg;
+
+  container.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add("show"));
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 300);
+  }, ms);
+}
+
+/* Drag behavior */
+dropZone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  dropZone.classList.add("dragover");
+});
+
+dropZone.addEventListener("dragleave", () => {
+  dropZone.classList.remove("dragover");
+});
+
+dropZone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dropZone.classList.remove("dragover");
+
+  const files = e.dataTransfer.files;
+
+  if (!files || files.length === 0) {
+    fileList.innerHTML = "❌ No file detected!";
+    showToast("❌ No file dropped");
+    return;
+  }
+
+  let html = "<b>Uploaded Files:</b><br>";
+  for (let i = 0; i < files.length; i++) {
+    html += "✅ " + files[i].name + "<br>";
+  }
+
+  fileList.innerHTML = html;
+  showToast("✅ " + files.length + " file(s) uploaded");
+
+  console.log("Files dropped:", files);
+});
+</script>
+
+</body>
+</html>
